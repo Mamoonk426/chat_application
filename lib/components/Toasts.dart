@@ -11,4 +11,13 @@ class Toasts {
       msg: message,
     );
   }
+
+  static void successToast(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      backgroundColor: Colors.green,
+      gravity: ToastGravity.SNACKBAR,
+      toastLength: Toast.LENGTH_SHORT,
+    );
+  }
 }

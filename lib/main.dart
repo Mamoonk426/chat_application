@@ -1,4 +1,5 @@
 import 'package:chat_application/firebase_options.dart';
+import 'package:chat_application/providers/loginProvider.dart';
 import 'package:chat_application/providers/registerProivder.dart';
 import 'package:chat_application/providers/themProvider.dart';
 import 'package:chat_application/view/homeScreen.dart';
@@ -15,6 +16,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => Themprovider()),
         ChangeNotifierProvider(create: (_) => Registerproivder()),
+        ChangeNotifierProvider(create: (_) => Loginprovider()),
       ],
 
       child: MyApp(),

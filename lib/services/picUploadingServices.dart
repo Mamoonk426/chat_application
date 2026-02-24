@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:chat_application/components/Toasts.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Picuploading {
@@ -20,11 +21,11 @@ class Picuploading {
     }
   }
 
-  Future<String> uploading(File image) async {
+  Future<String> uploading(File? image) async {
     try {
       String filename = 'images/${DateTime.now().millisecondsSinceEpoch}.jpg';
       Reference ref = firebaseStorage.ref().child(filename);
-      UploadTask task = ref.putFile(image);
+      UploadTask task = ref.putFile(image ?? File(''));
       TaskSnapshot snapshot = await task;
       String downloadUrl = await snapshot.ref.getDownloadURL();
       print('Image Uploaded : $downloadUrl');
