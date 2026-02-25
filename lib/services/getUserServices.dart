@@ -1,0 +1,13 @@
+import 'package:chat_application/models/userModel.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+class Getuserservices {
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+  Future<List<Usermodel>> getUsers(String email) async {
+    final snapshot = await firebaseFirestore.collection('Users').get();
+    return snapshot.docs.map((doc) => Usermodel.fromMap(doc.data())).toList();
+  }
+}

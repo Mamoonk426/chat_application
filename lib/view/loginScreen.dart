@@ -1,6 +1,7 @@
 import 'package:chat_application/components/button.dart';
 import 'package:chat_application/components/customFormField.dart';
 import 'package:chat_application/providers/loginProvider.dart';
+import 'package:chat_application/view/homeScreen.dart';
 import 'package:chat_application/view/registerScreen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -87,10 +88,16 @@ class _LoginscreenState extends State<Loginscreen> {
                 child: Button(
                   title: 'Login',
                   call: () async {
-                    await authProvider.login(
+                    final login = await authProvider.login(
                       email.text.trim(),
                       password.text.trim(),
                     );
+                    if (login == true) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => Homescreen()),
+                      );
+                    }
                   },
                 ),
               ),

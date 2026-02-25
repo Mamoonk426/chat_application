@@ -88,18 +88,31 @@ class _RegisterscreenState extends State<Registerscreen> {
                     children: [
                       SizedBox(height: 10),
                       Customformfield(
+                        errortext: registerProvider.nameError,
+                        onChanged: (value) {
+                          registerProvider.checkName(value.toString());
+                          print(value);
+                        },
                         controller: name,
                         title: 'Name',
                         prefix: Icon(Icons.person),
                       ),
                       SizedBox(height: 10),
                       Customformfield(
+                        errortext: registerProvider.emailError,
+                        onChanged: (value) {
+                          registerProvider.checkmail(value.toString());
+                        },
                         controller: email,
                         title: 'email',
                         prefix: Icon(Icons.alternate_email_outlined),
                       ),
                       SizedBox(height: 10),
                       Customformfield(
+                        errortext: registerProvider.passError,
+                        onChanged: (value) {
+                          registerProvider.checkpass(value.toString());
+                        },
                         controller: password,
                         title: 'password',
                         prefix: Icon(Icons.password),

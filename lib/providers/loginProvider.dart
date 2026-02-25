@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class Loginprovider with ChangeNotifier {
   Authservices authservices = Authservices();
-  Future<void> login(String email, String password) async {
-    await authservices.login(email, password);
+  Future<bool> login(String email, String password) async {
+    return await authservices.login(email, password);
   }
 }

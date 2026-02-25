@@ -1,4 +1,6 @@
 import 'package:chat_application/firebase_options.dart';
+import 'package:chat_application/providers/chatProvider.dart';
+import 'package:chat_application/providers/homeProvider.dart';
 import 'package:chat_application/providers/loginProvider.dart';
 import 'package:chat_application/providers/registerProivder.dart';
 import 'package:chat_application/providers/themProvider.dart';
@@ -14,9 +16,11 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => Homeprovider()),
         ChangeNotifierProvider(create: (_) => Themprovider()),
         ChangeNotifierProvider(create: (_) => Registerproivder()),
         ChangeNotifierProvider(create: (_) => Loginprovider()),
+        ChangeNotifierProvider(create: (_) => Chatprovider()),
       ],
 
       child: MyApp(),
@@ -35,7 +39,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Registerscreen(),
+      home: Homescreen(),
       debugShowCheckedModeBanner: false,
       theme: Provider.of<Themprovider>(context).themeData,
     );

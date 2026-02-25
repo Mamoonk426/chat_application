@@ -1,6 +1,7 @@
-import 'package:chat_application/providers/themProvider.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:chat_application/providers/homeProvider.dart';
+import 'package:chat_application/view/chatScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class Homescreen extends StatefulWidget {
@@ -11,28 +12,45 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
+  final int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
+    final homeProvider = Provider.of<Homeprovider>(context, listen: false);
+    print('B U I L D E D ');
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black,
+        currentIndex: homeProvider.currentIndex,
+        showSelectedLabels: true,
+        showUnselectedLabels: false,
+        onTap: (value) {
+          homeProvider.serIndex(value);
+        },
+        items: [
+          BottomNavigationBarItem(
+            label: 'Chats ',
+            icon: ImageIcon(AssetImage('assets/icons/Chaticon.png'), size: 30),
+          ),
+          BottomNavigationBarItem(
+            label: 'Groups',
+            icon: ImageIcon(AssetImage('assets/icons/Groupicon.png'), size: 30),
+          ),
+          BottomNavigationBarItem(
+            label: 'Profile',
+            icon: ImageIcon(
+              AssetImage('assets/icons/Profileicon.png'),
+              size: 30,
+            ),
+          ),
+        ],
+      ),
+      body: IndexedStack(
+        index: homeProvider.currentIndex,
         children: [
-          Center(
-            child: Text(
-              'Hi',
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Consumer<Themprovider>(
-            builder: (context, val, child) => Switch(
-              value: val.isDark,
-              onChanged: (value) {
-                val.settheme();
-                print(!value);
-              },
-            ),
-          ),
-          ElevatedButton(onPressed: () {}, child: Text('Press')),
+          Chatscreen(),
+          Center(child: Text('Groups')),
+          Center(child: Text('Profile')),
         ],
       ),
     );
