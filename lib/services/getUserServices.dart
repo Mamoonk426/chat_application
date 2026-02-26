@@ -6,7 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 class Getuserservices {
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-  Future<List<Usermodel>> getUsers(String email) async {
+  Future<List<Usermodel>> getUsers() async {
     final snapshot = await firebaseFirestore.collection('Users').get();
     return snapshot.docs.map((doc) => Usermodel.fromMap(doc.data())).toList();
   }

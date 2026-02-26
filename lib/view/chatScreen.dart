@@ -1,6 +1,7 @@
 import 'package:chat_application/components/customFormField.dart';
 import 'package:chat_application/providers/chatProvider.dart';
 import 'package:chat_application/providers/homeProvider.dart';
+import 'package:chat_application/view/addChatScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,15 @@ class _ChatscreenState extends State<Chatscreen> {
   Widget build(BuildContext context) {
     final chat = Provider.of<Chatprovider>(context);
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Addchatscreen()),
+          );
+        },
+        child: Icon(Icons.add),
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.only(left: 10, right: 10),
@@ -31,31 +41,31 @@ class _ChatscreenState extends State<Chatscreen> {
                   onPressed: () async {},
                   icon: ImageIcon(AssetImage('assets/icons/Magnifier.png')),
                 ),
-                title: 'Search Chats By Email',
+                title: 'Search Your Chats',
                 controller: searchController,
               ),
               SizedBox(height: 10),
-              Expanded(
-                child: FutureBuilder(
-                  future: chat.getUser(searchController.text),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData &&
-                        snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    }
-                    if (!snapshot.hasData) {
-                      return Center(child: Text('No User found'));
-                    }
-                    final data = chat.filterUser();
-                    return ListView.builder(
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        return Card(child: Text(data[index].email));
-                      },
-                    );
-                  },
-                ),
-              ),
+              // Expanded(
+              //   child: FutureBuilder(
+              //     future: chat.getUser(),
+              //     builder: (context, snapshot) {
+              //       if (snapshot.hasData &&
+              //           snapshot.connectionState == ConnectionState.waiting) {
+              //         return CircularProgressIndicator();
+              //       }
+              //       if (!snapshot.hasData) {
+              //         return Center(child: Text('No User found'));
+              //       }
+              //       final data = chat.filterUser();
+              //       return ListView.builder(
+              //         itemCount: data.length,
+              //         itemBuilder: (context, index) {
+              //           return Card(child: Text(data[index].email));
+              //         },
+              //       );
+              //     },
+              //   ),
+              // ),
             ],
           ),
         ),

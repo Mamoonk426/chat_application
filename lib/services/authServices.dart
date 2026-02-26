@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:chat_application/components/Toasts.dart';
 import 'package:chat_application/models/userModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

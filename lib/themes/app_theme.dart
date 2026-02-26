@@ -455,8 +455,8 @@ class AppTheme {
 
     // ── FloatingActionButton ──────────────────────────────────────────────
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.secondary500,
-      foregroundColor: AppColors.secondary900,
+      backgroundColor: AppColors.secondary900,
+      foregroundColor: Colors.white,
       elevation: 4,
       shape: CircleBorder(),
     ),

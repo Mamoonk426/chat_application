@@ -12,10 +12,9 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
-  final int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    final homeProvider = Provider.of<Homeprovider>(context, listen: false);
+    final homeProvider = Provider.of<Homeprovider>(context);
     print('B U I L D E D ');
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
@@ -25,7 +24,7 @@ class _HomescreenState extends State<Homescreen> {
         showSelectedLabels: true,
         showUnselectedLabels: false,
         onTap: (value) {
-          homeProvider.serIndex(value);
+          homeProvider.setIndex(value);
         },
         items: [
           BottomNavigationBarItem(
