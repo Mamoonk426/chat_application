@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Usermodel {
@@ -8,7 +9,7 @@ class Usermodel {
   final String? phoneNumber;
   final bool isOnline;
   final DateTime? lastSeen;
-  final DateTime createdAt;
+  final FieldValue createdAt;
 
   const Usermodel({
     required this.id,
@@ -33,7 +34,7 @@ class Usermodel {
       lastSeen: map['lastSeen'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['lastSeen'] as int)
           : null,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
+      createdAt: FieldValue.serverTimestamp(),
     );
   }
 
@@ -47,7 +48,7 @@ class Usermodel {
       'phoneNumber': phoneNumber,
       'isOnline': isOnline,
       'lastSeen': lastSeen?.millisecondsSinceEpoch,
-      'createdAt': createdAt.millisecondsSinceEpoch,
+      'createdAt': createdAt,
     };
   }
 

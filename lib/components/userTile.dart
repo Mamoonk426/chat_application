@@ -4,7 +4,7 @@ class Usertile extends StatelessWidget {
   String title;
   String subtitle;
   bool? status;
-  Function()? onPressed;
+  Function() onPressed;
   bool? isOnline;
 
   Usertile({
@@ -12,7 +12,7 @@ class Usertile extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.status,
-    this.onPressed,
+    required this.onPressed,
     this.isOnline,
   });
 
@@ -27,18 +27,6 @@ class Usertile extends StatelessWidget {
               width: 5,
               color: Theme.of(context).colorScheme.primary,
             ),
-            // right: BorderSide(
-            //   color: Theme.of(context).colorScheme.primary,
-            //   width: 2,
-            // ),
-            // top: BorderSide(
-            //   color: Theme.of(context).colorScheme.primary,
-            //   width: 2,
-            // ),
-            // bottom: BorderSide(
-            //   color: Theme.of(context).colorScheme.primary,
-            //   width: 2,
-            // ),
           ),
         ),
         height: 75,
@@ -48,19 +36,24 @@ class Usertile extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
-                height: 55,
-                width: 55,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).colorScheme.inversePrimary,
-                    ],
+              Stack(
+                children: [
+                  Container(
+                    height: 55,
+                    width: 55,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Theme.of(context).primaryColor,
+                          Theme.of(context).colorScheme.inversePrimary,
+                        ],
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(child: Text(title)),
                   ),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(child: Text(title)),
+                  Icon(isOnline == true ? Icons.wifi_sharp : Icons.wifi_off),
+                ],
               ),
               SizedBox(width: 30),
               SizedBox(
@@ -76,9 +69,7 @@ class Usertile extends StatelessWidget {
               ),
               SizedBox(width: 110),
               InkWell(
-                onTap: () {
-                  onPressed;
-                },
+                onTap: () => onPressed(),
                 child: Container(
                   width: 70,
                   height: 30,

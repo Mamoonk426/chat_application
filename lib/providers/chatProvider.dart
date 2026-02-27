@@ -1,8 +1,11 @@
+import 'package:chat_application/models/requestModel.dart';
 import 'package:chat_application/models/userModel.dart';
 import 'package:chat_application/services/getUserServices.dart';
+import 'package:chat_application/services/requestServices.dart';
 import 'package:flutter/material.dart';
 
 class Chatprovider with ChangeNotifier {
+  Requestservices requestservices = Requestservices();
   String extracting(String name) {
     List<String> splitName = name.split(' ');
     String? title;
@@ -37,7 +40,7 @@ class Chatprovider with ChangeNotifier {
   Future<List<Usermodel>> getUser() async {
     final data = await getuserservices.getUsers();
     _emaildata = data;
-    _filtereddata = []; // Show all users initially
+    _filtereddata = _emaildata; // Show all users initially
     notifyListeners();
     return data;
   }
@@ -49,7 +52,7 @@ class Chatprovider with ChangeNotifier {
   List<Usermodel> filterUser() {
     if (_searchQuery == null || _searchQuery!.trim().isEmpty) {
       // Show all users when query is empty
-      _filtereddata = [];
+      _filtereddata = _emaildata;
     } else {
       _filtereddata = _emaildata
           .where(
@@ -60,5 +63,9 @@ class Chatprovider with ChangeNotifier {
     }
     notifyListeners();
     return _filtereddata;
+  }
+
+  Future<void> sendRequests(String recieverId) async {
+    await requestservices.sendRequest(recieverId);
   }
 }

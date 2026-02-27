@@ -9,6 +9,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 class Authservices {
   static FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
+  User? currentUser;
+
   Future<void> storeUser(Usermodel userModel) async {
     await db.collection('Users').doc(userModel.id).set(userModel.toMap());
   }
@@ -26,8 +28,9 @@ class Authservices {
         id: uid,
         name: name,
         email: email,
-        createdAt: DateTime.now(),
+        createdAt: FieldValue.serverTimestamp(),
       );
+      currentUser = firebaseAuth.currentUser;
       await storeUser(usermodel);
     } on FirebaseAuthException catch (e) {
       Toasts.errorToast(e.message ?? 'Authentication error');
@@ -51,6 +54,7 @@ class Authservices {
         password: password,
       );
       Toasts.successToast('Login Successfully');
+      currentUser = firebaseAuth.currentUser;
       return true;
     } on FirebaseAuthException catch (e) {
       print(e.toString());

@@ -5,6 +5,7 @@ import 'package:chat_application/providers/loginProvider.dart';
 import 'package:chat_application/providers/registerProivder.dart';
 import 'package:chat_application/providers/themProvider.dart';
 import 'package:chat_application/view/homeScreen.dart';
+import 'package:chat_application/view/loginScreen.dart';
 import 'package:chat_application/view/registerScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Homescreen(),
+      home: Loginscreen(),
       debugShowCheckedModeBanner: false,
       theme: Provider.of<Themprovider>(context).themeData,
     );

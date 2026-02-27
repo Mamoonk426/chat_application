@@ -1,3 +1,4 @@
+import 'package:chat_application/components/Toasts.dart';
 import 'package:chat_application/components/customFormField.dart';
 import 'package:chat_application/components/userTile.dart';
 import 'package:chat_application/providers/chatProvider.dart';
@@ -103,6 +104,11 @@ class _AddchatscreenState extends State<Addchatscreen> {
                     }
                     var title = chat.extracting(data[index].name);
                     return Usertile(
+                      onPressed: () async {
+                        print('Sent');
+                        await chat.sendRequests(data[index].id);
+                        Toasts.successToast('Reqeust Sent');
+                      },
                       title: title,
                       subtitle: data[index].name,
                       status: data[index].isOnline,
