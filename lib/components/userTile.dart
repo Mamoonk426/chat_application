@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 
 class Usertile extends StatelessWidget {
-  String title;
-  String subtitle;
-  bool? status;
-  Function() onPressed;
-  bool? isOnline;
+  final String title;
+  final String subtitle;
+  final bool? status;
+  final VoidCallback onPressed;
+  final String actionLabel;
+  final IconData actionIcon;
 
-  Usertile({
+  const Usertile({
     super.key,
     required this.title,
     required this.subtitle,
     required this.status,
     required this.onPressed,
-    this.isOnline,
+    this.actionLabel = 'Add',
+    this.actionIcon = Icons.add,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isOnline = status == true;
     return Card(
       child: Container(
         decoration: BoxDecoration(
@@ -31,7 +34,7 @@ class Usertile extends StatelessWidget {
         ),
         height: 75,
         width: double.infinity,
-        child: Padding(
+          child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -52,46 +55,46 @@ class Usertile extends StatelessWidget {
                     ),
                     child: Center(child: Text(title)),
                   ),
-                  Icon(isOnline == true ? Icons.wifi_sharp : Icons.wifi_off),
+                  Icon(isOnline ? Icons.wifi_sharp : Icons.wifi_off),
                 ],
               ),
               SizedBox(width: 30),
-              SizedBox(
-                width: 100,
-                height: 50,
+              Expanded(
                 child: Column(
-                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(subtitle),
-                    Text(isOnline == true ? 'Online' : 'Offline'),
+                    Text(subtitle, overflow: TextOverflow.ellipsis),
+                    Text(isOnline ? 'Online' : 'Offline'),
                   ],
                 ),
               ),
-              SizedBox(width: 110),
+              const SizedBox(width: 12),
               InkWell(
                 onTap: () => onPressed(),
                 child: Container(
-                  width: 70,
                   height: 30,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: Theme.of(context).colorScheme.secondary,
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 5.0, left: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Center(
                           child: Text(
-                            'Add',
+                            actionLabel,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                        Icon(Icons.add, color: Colors.black),
+                        const SizedBox(width: 6),
+                        Icon(actionIcon, color: Colors.black),
                       ],
                     ),
                   ),

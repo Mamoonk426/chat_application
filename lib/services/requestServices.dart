@@ -5,16 +5,33 @@ import 'package:firebase_auth/firebase_auth.dart';
 class Requestservices {
   FirebaseFirestore dbInstance = FirebaseFirestore.instance;
 
+  Stream<Set<String>> sentRequestReceiverIdsStream(String senderId) {
+    return dbInstance
+        .collection('friendRequests')
+        .where('senderId', isEqualTo: senderId)
+        .snapshots()
+        .map((snapshot) {
+          final receiverIds = <String>{};
+          for (final doc in snapshot.docs) {
+            final receiverId = doc.data()['recieverId'];
+            if (receiverId is String) {
+              receiverIds.add(receiverId);
+            }
+          }
+          return receiverIds;
+        });
+  }
+
   Future<void> sendRequest(String recieverId) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
-      throw Exception('User is not logged in');
+      throw Exception('User need to Login first');
     }
-    DocumentReference docref = dbInstance.collection('friendRequests').doc();
-    await docref.set({
+    final docRef = dbInstance.collection('friendRequests').doc();
+    await docRef.set({
       'senderId': currentUser.uid,
       'recieverId': recieverId,
-      'requestId': docref.id,
+      'requestId': docRef.id,
       'status': 'Pending',
     });
   }
@@ -25,7 +42,7 @@ class Requestservices {
       throw Exception('User is not logged in');
     }
     dbInstance
-        .collection('friendRequest')
+        .collection('friendRequests')
         .where('recieverId', isEqualTo: currentUser.uid)
         .where('status', isEqualTo: 'Pending')
         .snapshots()
@@ -34,7 +51,7 @@ class Requestservices {
             print('No Request found');
           } else {
             for (var doc in snapshots.docs) {
-              RequestModel model = RequestModel.fromMap(doc.data());
+              RequestModel.fromMap(doc.data());
             }
           }
         });

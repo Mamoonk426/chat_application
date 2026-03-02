@@ -1,9 +1,7 @@
-import 'package:chat_application/components/Toasts.dart';
 import 'package:chat_application/components/customFormField.dart';
 import 'package:chat_application/components/userTile.dart';
 import 'package:chat_application/providers/chatProvider.dart';
-import 'package:chat_application/services/enumServices.dart';
-import 'package:chat_application/themes/app_theme.dart';
+import 'package:chat_application/view/userProfileScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +25,9 @@ class _AddchatscreenState extends State<Addchatscreen> {
       print(_isLoaded);
       _isLoaded = true;
       print(_isLoaded);
-      Provider.of<Chatprovider>(context, listen: false).getUser();
+      final chatProvider = Provider.of<Chatprovider>(context, listen: false);
+      chatProvider.getUser();
+      chatProvider.listenSentRequests();
     }
   }
 
@@ -76,21 +76,23 @@ class _AddchatscreenState extends State<Addchatscreen> {
                 },
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: List.generate(3, (index) {
-                  return FilterChip(
-                    selected: selectedchips.contains(chips[index]),
-                    showCheckmark: false,
-                    label: Text(chips[index]),
-                    selectedColor: Theme.of(context).colorScheme.inversePrimary,
-                    onSelected: (isSelected) {
-                      setState(() {});
-                      if (isSelected) {
-                        selectedchips.add(chips[index]);
-                      } else {
-                        selectedchips.remove(chips[index]);
-                      }
-                    },
+                  return Expanded(
+                    child: FilterChip(
+                      selected: selectedchips.contains(chips[index]),
+                      showCheckmark: false,
+                      label: Text(chips[index]),
+                      selectedColor: Theme.of(
+                        context,
+                      ).colorScheme.inversePrimary,
+                      onSelected: (isSelected) {
+                        if (isSelected) {
+                          selectedchips.add(chips[index]);
+                        } else {
+                          selectedchips.remove(chips[index]);
+                        }
+                      },
+                    ),
                   );
                 }),
               ),
@@ -102,16 +104,30 @@ class _AddchatscreenState extends State<Addchatscreen> {
                     if (data.isEmpty) {
                       return Center(child: Text('No User Found'));
                     }
-                    var title = chat.extracting(data[index].name);
+                    final user = data[index];
+                    var title = chat.extracting(user.name);
+                    final hasSentRequest = chat.hasSentRequestTo(user.id);
+
                     return Usertile(
                       onPressed: () async {
-                        print('Sent');
-                        await chat.sendRequests(data[index].id);
-                        Toasts.successToast('Reqeust Sent');
+                        if (hasSentRequest) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  Userprofilescreen(user: user),
+                            ),
+                          );
+                          return;
+                        }
+
+                        await chat.sendRequests(user.id);
                       },
                       title: title,
-                      subtitle: data[index].name,
-                      status: data[index].isOnline,
+                      subtitle: user.name,
+                      status: user.isOnline,
+                      actionLabel: hasSentRequest ? 'View profile' : 'Add',
+                      actionIcon: hasSentRequest ? Icons.person : Icons.add,
                     );
                   },
                 ),

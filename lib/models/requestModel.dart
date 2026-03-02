@@ -5,9 +5,9 @@ class RequestModel {
   final String senderId; // who sent the request
   final String receiverId; // who will receive it
   final String status; // "pending" / "accepted" / "rejected"
-  final DateTime createdAt;
+  final DateTime? createdAt;
 
-  RequestModel({
+  const RequestModel({
     required this.requestId,
     required this.senderId,
     required this.receiverId,
@@ -16,12 +16,20 @@ class RequestModel {
   });
 
   factory RequestModel.fromMap(Map<String, dynamic> map) {
+    final createdAtRaw = map['createdAt'];
+    DateTime? createdAt;
+    if (createdAtRaw is Timestamp) {
+      createdAt = createdAtRaw.toDate();
+    } else if (createdAtRaw is int) {
+      createdAt = DateTime.fromMillisecondsSinceEpoch(createdAtRaw);
+    }
+
     return RequestModel(
-      requestId: map['requestId'],
-      senderId: map['senderId'],
-      receiverId: map['receiverId'],
-      status: map['status'],
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
+      requestId: map['requestId'] as String,
+      senderId: map['senderId'] as String,
+      receiverId: (map['receiverId'] ?? map['recieverId']) as String,
+      status: (map['status'] as String?) ?? 'Pending',
+      createdAt: createdAt,
     );
   }
 
@@ -29,7 +37,7 @@ class RequestModel {
     return {
       'requestId': requestId,
       'senderId': senderId,
-      'receiverId': receiverId,
+      'recieverId': receiverId,
       'status': status,
       'createdAt': FieldValue.serverTimestamp(),
     };

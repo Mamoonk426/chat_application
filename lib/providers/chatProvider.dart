@@ -1,11 +1,50 @@
-import 'package:chat_application/models/requestModel.dart';
+import 'dart:async';
+
+import 'package:chat_application/components/Toasts.dart';
 import 'package:chat_application/models/userModel.dart';
 import 'package:chat_application/services/getUserServices.dart';
 import 'package:chat_application/services/requestServices.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Chatprovider with ChangeNotifier {
-  Requestservices requestservices = Requestservices();
+  final Requestservices requestservices = Requestservices();
+  final Getuserservices getuserservices = Getuserservices();
+
+  StreamSubscription<Set<String>>? _sentRequestsSubscription;
+  Set<String> _sentRequestReceiverIds = {};
+
+  bool hasSentRequestTo(String receiverId) {
+    return _sentRequestReceiverIds.contains(receiverId);
+  }
+
+  void listenSentRequests() {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      _sentRequestsSubscription?.cancel();
+      _sentRequestsSubscription = null;
+      _sentRequestReceiverIds = {};
+      notifyListeners();
+      return;
+    }
+
+    _sentRequestsSubscription?.cancel();
+    _sentRequestsSubscription = requestservices
+        .sentRequestReceiverIdsStream(currentUser.uid)
+        .listen((receiverIds) {
+          _sentRequestReceiverIds = receiverIds;
+          notifyListeners();
+        }, onError: (Object error) {
+          Toasts.errorToast(error.toString());
+        });
+  }
+
+  @override
+  void dispose() {
+    _sentRequestsSubscription?.cancel();
+    super.dispose();
+  }
+
   String extracting(String name) {
     List<String> splitName = name.split(' ');
     String? title;
@@ -27,7 +66,6 @@ class Chatprovider with ChangeNotifier {
     }
   }
 
-  Getuserservices getuserservices = Getuserservices();
   String? _searchQuery;
   String? get searchQuery => _searchQuery;
 
@@ -39,6 +77,7 @@ class Chatprovider with ChangeNotifier {
 
   Future<List<Usermodel>> getUser() async {
     final data = await getuserservices.getUsers();
+
     _emaildata = data;
     _filtereddata = _emaildata; // Show all users initially
     notifyListeners();
@@ -57,7 +96,7 @@ class Chatprovider with ChangeNotifier {
       _filtereddata = _emaildata
           .where(
             (user) =>
-                user.email.toLowerCase().contains(_searchQuery!.toLowerCase()),
+                user.name.toLowerCase().contains(_searchQuery!.toLowerCase()),
           )
           .toList();
     }
@@ -66,6 +105,13 @@ class Chatprovider with ChangeNotifier {
   }
 
   Future<void> sendRequests(String recieverId) async {
-    await requestservices.sendRequest(recieverId);
+    try {
+      await requestservices.sendRequest(recieverId);
+      _sentRequestReceiverIds = {..._sentRequestReceiverIds, recieverId};
+      notifyListeners();
+      Toasts.successToast('Request sent');
+    } catch (e) {
+      Toasts.errorToast(e.toString());
+    }
   }
 }
