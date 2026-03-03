@@ -41,19 +41,18 @@ class Requestservices {
     if (currentUser == null) {
       throw Exception('User is not logged in');
     }
-    dbInstance
+  }
+
+  Stream<List<RequestModel>> getSentRequestStream(String receiverId) {
+    return dbInstance
         .collection('friendRequests')
-        .where('recieverId', isEqualTo: currentUser.uid)
+        .where('recieverId', isEqualTo: receiverId)
         .where('status', isEqualTo: 'Pending')
         .snapshots()
-        .listen((snapshots) {
-          if (snapshots.docs.isEmpty) {
-            print('No Request found');
-          } else {
-            for (var doc in snapshots.docs) {
-              RequestModel.fromMap(doc.data());
-            }
-          }
+        .map((snapshots) {
+          return snapshots.docs
+              .map((doc) => RequestModel.fromMap(doc.data()))
+              .toList();
         });
   }
 }

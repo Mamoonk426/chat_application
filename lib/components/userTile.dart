@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class Usertile extends StatelessWidget {
+  final String leading;
   final String title;
-  final String subtitle;
   final bool? status;
   final VoidCallback onPressed;
   final String actionLabel;
@@ -11,7 +12,7 @@ class Usertile extends StatelessWidget {
   const Usertile({
     super.key,
     required this.title,
-    required this.subtitle,
+    required this.leading,
     required this.status,
     required this.onPressed,
     this.actionLabel = 'Add',
@@ -34,7 +35,7 @@ class Usertile extends StatelessWidget {
         ),
         height: 75,
         width: double.infinity,
-          child: Padding(
+        child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -53,9 +54,17 @@ class Usertile extends StatelessWidget {
                       ),
                       shape: BoxShape.circle,
                     ),
-                    child: Center(child: Text(title)),
+                    child: Center(child: Text(leading)),
                   ),
-                  Icon(isOnline ? Icons.wifi_sharp : Icons.wifi_off),
+                  Positioned(
+                    top: 40,
+                    right: 2,
+                    child: Icon(
+                      size: 10,
+                      Icons.circle,
+                      color: isOnline ? Colors.green : Colors.grey,
+                    ),
+                  ),
                 ],
               ),
               SizedBox(width: 30),
@@ -63,10 +72,7 @@ class Usertile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(subtitle, overflow: TextOverflow.ellipsis),
-                    Text(isOnline ? 'Online' : 'Offline'),
-                  ],
+                  children: [Text(title, overflow: TextOverflow.ellipsis)],
                 ),
               ),
               const SizedBox(width: 12),

@@ -66,9 +66,6 @@ class _RegisterscreenState extends State<Registerscreen> {
                       top: 140,
                       left: 80,
                       child: InkWell(
-                        onTap: () async {
-                          await registerProvider.pickPic();
-                        },
                         child: CircleAvatar(
                           backgroundColor: Theme.of(
                             context,
@@ -155,6 +152,7 @@ class _RegisterscreenState extends State<Registerscreen> {
                       email.text,
                       password.text,
                       name.text,
+                      context,
                     );
                   },
                 ),

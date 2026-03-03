@@ -75,27 +75,7 @@ class _AddchatscreenState extends State<Addchatscreen> {
                   chat.setQuery(value);
                 },
               ),
-              Row(
-                children: List.generate(3, (index) {
-                  return Expanded(
-                    child: FilterChip(
-                      selected: selectedchips.contains(chips[index]),
-                      showCheckmark: false,
-                      label: Text(chips[index]),
-                      selectedColor: Theme.of(
-                        context,
-                      ).colorScheme.inversePrimary,
-                      onSelected: (isSelected) {
-                        if (isSelected) {
-                          selectedchips.add(chips[index]);
-                        } else {
-                          selectedchips.remove(chips[index]);
-                        }
-                      },
-                    ),
-                  );
-                }),
-              ),
+              SizedBox(height: 15),
               Expanded(
                 child: ListView.builder(
                   itemCount: chat.filtereddata.length,
@@ -121,10 +101,10 @@ class _AddchatscreenState extends State<Addchatscreen> {
                           return;
                         }
 
-                        await chat.sendRequests(user.id);
+                        await chat.sendRequests(user.id, context);
                       },
-                      title: title,
-                      subtitle: user.name,
+                      leading: title,
+                      title: user.name,
                       status: user.isOnline,
                       actionLabel: hasSentRequest ? 'View profile' : 'Add',
                       actionIcon: hasSentRequest ? Icons.person : Icons.add,

@@ -32,8 +32,11 @@ class _HomescreenState extends State<Homescreen> {
             icon: ImageIcon(AssetImage('assets/icons/Chaticon.png'), size: 30),
           ),
           BottomNavigationBarItem(
-            label: 'Groups',
-            icon: ImageIcon(AssetImage('assets/icons/Groupicon.png'), size: 30),
+            label: 'Requests',
+            icon: ImageIcon(
+              AssetImage('assets/icons/group_12183877.png'),
+              size: 30,
+            ),
           ),
           BottomNavigationBarItem(
             label: 'Profile',

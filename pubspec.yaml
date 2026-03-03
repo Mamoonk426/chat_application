@@ -42,6 +42,7 @@ dependencies:
   firebase_storage: ^13.0.6
   provider: ^6.1.5+1
   flutter_svg: ^2.2.3
+  awesome_snackbar_content: ^0.1.8
 
 
 
@@ -71,8 +72,9 @@ flutter:
   assets:
     - assets/icons/Profileicon.png
     - assets/icons/Chaticon.png
-    - assets/icons/Groupicon.png
     - assets/icons/Magnifier.png
+    - assets/icons/group_12183877.png
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

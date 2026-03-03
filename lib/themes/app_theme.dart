@@ -297,7 +297,7 @@ class AppTheme {
   static const double _radiusXl = 24.0;
 
   // ─── Elevation ────────────────────────────────────────────────────────────
-  static const double _elevationCard = 2.0;
+  static const double _elevationCard = 5.0;
   static const double _elevationDialog = 6.0;
   static const double _elevationNavBar = 8.0;
 

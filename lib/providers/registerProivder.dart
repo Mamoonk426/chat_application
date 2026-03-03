@@ -65,18 +65,23 @@ class Registerproivder with ChangeNotifier {
   File? image;
   Authservices authservices = Authservices();
   String? avatarUrl;
-  Picuploading picuploading = Picuploading();
-  Future<void> pickPic() async {
-    await picuploading.imagePicker();
-    if (picuploading.image != null) {
-      print(picuploading.image!.path.toString());
-      image = picuploading.image;
-      notifyListeners();
-    }
-  }
+  // Picuploading picuploading = Picuploading();
+  // Future<void> pickPic() async {
+  //   await picuploading.imagePicker();
+  //   if (picuploading.image != null) {
+  //     print(picuploading.image!.path.toString());
+  //     image = picuploading.image;
+  //     notifyListeners();
+  //   }
+  // }
 
-  Future<void> registerUser(String email, String password, String name) async {
-    await authservices.register(email, password, name);
+  Future<void> registerUser(
+    String email,
+    String password,
+    String name,
+    BuildContext context,
+  ) async {
+    await authservices.register(email, password, name, context);
     notifyListeners();
   }
 }

@@ -15,6 +15,7 @@ class Chatprovider with ChangeNotifier {
   Set<String> _sentRequestReceiverIds = {};
 
   bool hasSentRequestTo(String receiverId) {
+    print(" HasSentTheRequest $_sentRequestReceiverIds.contains(receiverId)");
     return _sentRequestReceiverIds.contains(receiverId);
   }
 
@@ -34,8 +35,6 @@ class Chatprovider with ChangeNotifier {
         .listen((receiverIds) {
           _sentRequestReceiverIds = receiverIds;
           notifyListeners();
-        }, onError: (Object error) {
-          Toasts.errorToast(error.toString());
         });
   }
 
@@ -104,14 +103,14 @@ class Chatprovider with ChangeNotifier {
     return _filtereddata;
   }
 
-  Future<void> sendRequests(String recieverId) async {
+  Future<void> sendRequests(String recieverId, BuildContext context) async {
     try {
       await requestservices.sendRequest(recieverId);
       _sentRequestReceiverIds = {..._sentRequestReceiverIds, recieverId};
       notifyListeners();
-      Toasts.successToast('Request sent');
+      Toasts.successToast('Request sent', context);
     } catch (e) {
-      Toasts.errorToast(e.toString());
+      Toasts.errorToast(e.toString(), context);
     }
   }
 }

@@ -91,6 +91,7 @@ class _LoginscreenState extends State<Loginscreen> {
                     final login = await authProvider.login(
                       email.text.trim(),
                       password.text.trim(),
+                      context,
                     );
                     if (login == true) {
                       Navigator.pushReplacement(
