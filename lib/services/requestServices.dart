@@ -55,4 +55,33 @@ class Requestservices {
               .toList();
         });
   }
+
+  Stream<Map<String, String>> getSenderNamesStream() {
+    final currentId = FirebaseAuth.instance.currentUser!.uid;
+
+    return dbInstance
+        .collection('friendRequests')
+        .where('recieverId', isEqualTo: currentId)
+        .snapshots()
+        .asyncMap((snapshot) async {
+          Map<String, String> names = {};
+
+          for (var doc in snapshot.docs) {
+            final senderId = doc.data()['senderId'] as String?;
+            if (senderId == null) continue;
+
+            final userDoc = await dbInstance
+                .collection('Users')
+                .doc(senderId)
+                .get();
+            final name = userDoc.data()?['name'] as String?;
+
+            if (name != null) {
+              names[senderId] = name;
+            }
+          }
+
+          return names;
+        });
+  }
 }

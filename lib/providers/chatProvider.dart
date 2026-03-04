@@ -15,7 +15,6 @@ class Chatprovider with ChangeNotifier {
   Set<String> _sentRequestReceiverIds = {};
 
   bool hasSentRequestTo(String receiverId) {
-    print(" HasSentTheRequest $_sentRequestReceiverIds.contains(receiverId)");
     return _sentRequestReceiverIds.contains(receiverId);
   }
 

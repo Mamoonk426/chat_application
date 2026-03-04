@@ -22,9 +22,7 @@ class _AddchatscreenState extends State<Addchatscreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isLoaded) {
-      print(_isLoaded);
       _isLoaded = true;
-      print(_isLoaded);
       final chatProvider = Provider.of<Chatprovider>(context, listen: false);
       chatProvider.getUser();
       chatProvider.listenSentRequests();

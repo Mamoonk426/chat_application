@@ -1,5 +1,6 @@
 import 'package:chat_application/providers/homeProvider.dart';
 import 'package:chat_application/view/chatScreen.dart';
+import 'package:chat_application/view/requestScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +52,7 @@ class _HomescreenState extends State<Homescreen> {
         index: homeProvider.currentIndex,
         children: [
           Chatscreen(),
-          Center(child: Text('Groups')),
+          Requestscreen(),
           Center(child: Text('Profile')),
         ],
       ),

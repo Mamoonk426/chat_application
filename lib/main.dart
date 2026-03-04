@@ -3,6 +3,7 @@ import 'package:chat_application/providers/chatProvider.dart';
 import 'package:chat_application/providers/homeProvider.dart';
 import 'package:chat_application/providers/loginProvider.dart';
 import 'package:chat_application/providers/registerProivder.dart';
+import 'package:chat_application/providers/requestProvider.dart';
 import 'package:chat_application/providers/themProvider.dart';
 import 'package:chat_application/view/homeScreen.dart';
 import 'package:chat_application/view/loginScreen.dart';
@@ -22,6 +23,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => Registerproivder()),
         ChangeNotifierProvider(create: (_) => Loginprovider()),
         ChangeNotifierProvider(create: (_) => Chatprovider()),
+        ChangeNotifierProvider(create: (_) => Requestprovider()),
       ],
 
       child: MyApp(),
