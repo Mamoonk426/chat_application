@@ -11,7 +11,7 @@ class Requestprovider with ChangeNotifier {
   StreamSubscription? _recievedRequestsStream;
   StreamSubscription? _recievedRequestsNames;
   StreamSubscription? get recievedRequestsNames => _recievedRequestsNames;
-  final Map<String, String> _names = {};
+  Map<String, String> _names = {};
   Map<String, String> get names => _names;
   Requestservices requestservices = Requestservices();
   List<RequestModel> _requests = [];
@@ -27,7 +27,9 @@ class Requestprovider with ChangeNotifier {
     _recievedRequestsNames = requestservices.getSenderNamesStream().listen((
       snapshot,
     ) {
-      names.addAll(snapshot);
+      if (_names.toString() == snapshot.toString()) return;
+      _names = snapshot;
+      print(_names);
       notifyListeners();
     });
   }

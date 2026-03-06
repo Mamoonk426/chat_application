@@ -19,6 +19,7 @@ class _ChatscreenState extends State<Chatscreen> {
   Widget build(BuildContext context) {
     final chat = Provider.of<Chatprovider>(context);
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(

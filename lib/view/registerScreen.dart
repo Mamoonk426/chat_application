@@ -148,11 +148,18 @@ class _RegisterscreenState extends State<Registerscreen> {
                 child: Button(
                   title: 'Register',
                   call: () async {
-                    await registerProvider.registerUser(
+                    final register = await registerProvider.registerUser(
                       email.text,
                       password.text,
                       name.text,
                       context,
+                    );
+                    if (register == false) {
+                      return;
+                    }
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => Loginscreen()),
                     );
                   },
                 ),

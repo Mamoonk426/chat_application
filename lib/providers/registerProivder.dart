@@ -75,13 +75,12 @@ class Registerproivder with ChangeNotifier {
   //   }
   // }
 
-  Future<void> registerUser(
+  Future<bool> registerUser(
     String email,
     String password,
     String name,
     BuildContext context,
   ) async {
-    await authservices.register(email, password, name, context);
-    notifyListeners();
+    return await authservices.register(email, password, name, context);
   }
 }

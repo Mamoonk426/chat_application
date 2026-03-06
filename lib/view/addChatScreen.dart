@@ -2,6 +2,7 @@ import 'package:chat_application/components/customFormField.dart';
 import 'package:chat_application/components/userTile.dart';
 import 'package:chat_application/providers/chatProvider.dart';
 import 'package:chat_application/view/userProfileScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -85,7 +86,10 @@ class _AddchatscreenState extends State<Addchatscreen> {
                     final user = data[index];
                     var title = chat.extracting(user.name);
                     final hasSentRequest = chat.hasSentRequestTo(user.id);
-
+                    if (user.id ==
+                        FirebaseAuth.instance.currentUser!.uid.toString()) {
+                      return SizedBox.shrink();
+                    }
                     return Usertile(
                       onPressed: () async {
                         if (hasSentRequest) {

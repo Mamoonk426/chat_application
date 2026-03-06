@@ -462,12 +462,20 @@ class AppTheme {
     ),
 
     // ── Card ──────────────────────────────────────────────────────────────
+    // ── Card ──────────────────────────────────────────────────────────────
     cardTheme: CardThemeData(
-      color: AppColors.grey0,
-      elevation: _elevationCard,
-      shadowColor: AppColors.primary500.withOpacity(0.12),
+      color: AppColors.primary50, // teal-tinted surface instead of pure white
+      elevation: 6, // slightly higher elevation
+      shadowColor: AppColors.primary600.withOpacity(
+        0.25,
+      ), // stronger, colored shadow
+      surfaceTintColor: AppColors.primary200, // M3 tint for depth
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(_radiusLg),
+        side: const BorderSide(
+          color: AppColors.primary200, // subtle teal border
+          width: 1.0,
+        ),
       ),
       clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

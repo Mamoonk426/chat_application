@@ -58,11 +58,11 @@ class Requestservices {
 
   Stream<Map<String, String>> getSenderNamesStream() {
     final currentId = FirebaseAuth.instance.currentUser!.uid;
-
+    Map<String, String> previousNames = {};
     return dbInstance
         .collection('friendRequests')
         .where('recieverId', isEqualTo: currentId)
-        .snapshots()
+        .snapshots(includeMetadataChanges: false)
         .asyncMap((snapshot) async {
           Map<String, String> names = {};
 
@@ -82,6 +82,13 @@ class Requestservices {
           }
 
           return names;
+        })
+        .distinct((prev, next) {
+          if (prev.length != next.length) return false;
+          for (final key in prev.keys) {
+            if (prev[key] != next[key]) return false;
+          }
+          return true;
         });
   }
 }
