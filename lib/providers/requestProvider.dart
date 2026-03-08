@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chat_application/components/Toasts.dart';
 import 'package:chat_application/models/requestModel.dart';
 import 'package:chat_application/models/userModel.dart';
 import 'package:chat_application/services/authServices.dart';
@@ -8,6 +9,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Requestprovider with ChangeNotifier {
+  Future<void> acceptRequest(String docId, BuildContext context) async {
+    await requestservices.acceptRequest(docId, context);
+    Toasts.successToast('Requested Accepted', context);
+  }
+
   StreamSubscription? _recievedRequestsStream;
   StreamSubscription? _recievedRequestsNames;
   StreamSubscription? get recievedRequestsNames => _recievedRequestsNames;

@@ -1,5 +1,5 @@
 import 'package:chat_application/providers/homeProvider.dart';
-import 'package:chat_application/view/chatScreen.dart';
+import 'package:chat_application/view/chatListScreen.dart';
 import 'package:chat_application/view/requestScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -48,7 +48,7 @@ class _HomescreenState extends State<Homescreen> {
       body: IndexedStack(
         index: homeProvider.currentIndex,
         children: [
-          Chatscreen(),
+          Chatlistscreen(),
           Requestscreen(),
           Center(child: Text('Profile')),
         ],

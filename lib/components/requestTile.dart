@@ -1,12 +1,21 @@
-import 'package:chat_application/components/button.dart';
 import 'package:flutter/material.dart';
 
 class Requesttile extends StatefulWidget {
   String? leading;
   String? title;
   String? trailing;
-
-  Requesttile({super.key, this.leading, this.title, this.trailing});
+  Function? confirmCall;
+  Function? cancelCall;
+  bool isAccepted;
+  Requesttile({
+    super.key,
+    this.leading,
+    this.title,
+    this.trailing,
+    this.cancelCall,
+    this.confirmCall,
+    this.isAccepted = false,
+  });
 
   @override
   State<Requesttile> createState() => _RequesttileState();
@@ -43,38 +52,71 @@ class _RequesttileState extends State<Requesttile> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 6,
-                            ),
-                            minimumSize: Size(0, 35),
-                          ),
-                          child: Text('Confirm'),
-                        ),
+                  if (widget.isAccepted)
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
                       ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 6,
-                            ),
-                            minimumSize: Size(0, 35),
-                          ),
-                          child: Text('Cancel'),
-                        ),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                    ],
-                  ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
+                            size: 18,
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            'You are friends now',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              widget.confirmCall!();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 6,
+                              ),
+                              minimumSize: Size(0, 35),
+                            ),
+                            child: Text('Confirm'),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () => widget.cancelCall,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 6,
+                              ),
+                              minimumSize: Size(0, 35),
+                            ),
+                            child: Text('Cancel'),
+                          ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),

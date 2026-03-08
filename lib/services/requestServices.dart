@@ -1,6 +1,8 @@
+import 'package:chat_application/components/Toasts.dart';
 import 'package:chat_application/models/requestModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class Requestservices {
   FirebaseFirestore dbInstance = FirebaseFirestore.instance;
@@ -22,18 +24,69 @@ class Requestservices {
         });
   }
 
-  Future<void> sendRequest(String recieverId) async {
+  Stream<Set<String>> friendIdsStream(String userId) {
+    // Listen to requests SENT by this user that were accepted
+    final sentStream = dbInstance
+        .collection('friendRequests')
+        .where('senderId', isEqualTo: userId)
+        .where('status', isEqualTo: 'Accepted')
+        .snapshots()
+        .map((snapshot) {
+          final ids = <String>{};
+          for (final doc in snapshot.docs) {
+            final receiverId = doc.data()['recieverId'];
+            if (receiverId is String) {
+              ids.add(receiverId);
+            }
+          }
+          return ids;
+        });
+
+    // Listen to requests RECEIVED by this user that were accepted
+    final receivedStream = dbInstance
+        .collection('friendRequests')
+        .where('recieverId', isEqualTo: userId)
+        .where('status', isEqualTo: 'Accepted')
+        .snapshots()
+        .map((snapshot) {
+          final ids = <String>{};
+          for (final doc in snapshot.docs) {
+            final senderId = doc.data()['senderId'];
+            if (senderId is String) {
+              ids.add(senderId);
+            }
+          }
+          return ids;
+        });
+
+    // Combine both streams
+    return sentStream.asyncExpand((sentIds) {
+      return receivedStream.map((receivedIds) {
+        return {...sentIds, ...receivedIds};
+      });
+    });
+  }
+
+  Future<void> sendRequest(String receiverId) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
       throw Exception('User need to Login first');
     }
     final docRef = dbInstance.collection('friendRequests').doc();
-    await docRef.set({
-      'senderId': currentUser.uid,
-      'recieverId': recieverId,
-      'requestId': docRef.id,
-      'status': 'Pending',
-    });
+    final request = RequestModel(
+      requestId: docRef.id,
+      senderId: currentUser.uid,
+      receiverId: receiverId,
+      status: 'Pending',
+      createdAt: DateTime.now(),
+    );
+    await docRef.set(request.toMap());
+    //   'senderId': currentUser.uid,
+    //   'recieverId': recieverId,
+    //   'requestId': docRef.id,
+    //   'status': 'Pending',
+
+    // });
   }
 
   Future<void> listenRequest(RequestModel requestmodel) async {
@@ -47,7 +100,6 @@ class Requestservices {
     return dbInstance
         .collection('friendRequests')
         .where('recieverId', isEqualTo: receiverId)
-        .where('status', isEqualTo: 'Pending')
         .snapshots()
         .map((snapshots) {
           return snapshots.docs
@@ -58,7 +110,6 @@ class Requestservices {
 
   Stream<Map<String, String>> getSenderNamesStream() {
     final currentId = FirebaseAuth.instance.currentUser!.uid;
-    Map<String, String> previousNames = {};
     return dbInstance
         .collection('friendRequests')
         .where('recieverId', isEqualTo: currentId)
@@ -90,5 +141,12 @@ class Requestservices {
           }
           return true;
         });
+  }
+
+  Future<void> acceptRequest(String docId, BuildContext context) async {
+    await dbInstance.collection('friendRequests').doc(docId).update({
+      'status': 'Accepted',
+    });
+    Toasts.successToast('Requested Accepted', context);
   }
 }

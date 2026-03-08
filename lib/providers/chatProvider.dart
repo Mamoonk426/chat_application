@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chat_application/components/Toasts.dart';
+import 'package:chat_application/models/requestModel.dart';
 import 'package:chat_application/models/userModel.dart';
 import 'package:chat_application/services/getUserServices.dart';
 import 'package:chat_application/services/requestServices.dart';
@@ -12,10 +13,29 @@ class Chatprovider with ChangeNotifier {
   final Getuserservices getuserservices = Getuserservices();
 
   StreamSubscription<Set<String>>? _sentRequestsSubscription;
+  StreamSubscription<Set<String>>? _friendIdsSubscription;
   Set<String> _sentRequestReceiverIds = {};
+  Set<String> _friendIds = {};
 
   bool hasSentRequestTo(String receiverId) {
     return _sentRequestReceiverIds.contains(receiverId);
+  }
+
+  bool isFriendWith(String userId) {
+    return _friendIds.contains(userId);
+  }
+
+  void listenFriendIds() {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    _friendIdsSubscription?.cancel();
+    _friendIdsSubscription = requestservices
+        .friendIdsStream(currentUser.uid)
+        .listen((friendIds) {
+          _friendIds = friendIds;
+          notifyListeners();
+        });
   }
 
   void listenSentRequests() {
@@ -35,11 +55,14 @@ class Chatprovider with ChangeNotifier {
           _sentRequestReceiverIds = receiverIds;
           notifyListeners();
         });
+
+    listenFriendIds();
   }
 
   @override
   void dispose() {
     _sentRequestsSubscription?.cancel();
+    _friendIdsSubscription?.cancel();
     super.dispose();
   }
 

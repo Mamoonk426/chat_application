@@ -3,6 +3,7 @@ import 'package:chat_application/components/userTile.dart';
 import 'package:chat_application/providers/chatProvider.dart';
 import 'package:chat_application/providers/requestProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class Requestscreen extends StatefulWidget {
@@ -24,6 +25,11 @@ class _RequestscreenState extends State<Requestscreen> {
       );
       requestProvider.listenTorecieveRequest();
     }
+  }
+
+  String _formatTime(DateTime? dateTime) {
+    if (dateTime == null) return '';
+    return DateFormat('MMM d, h:mm a').format(dateTime);
   }
 
   @override
@@ -60,7 +66,18 @@ class _RequestscreenState extends State<Requestscreen> {
                     );
                   }
                   return Requesttile(
+                    isAccepted: data[index].status == 'Accepted',
+                    confirmCall: () async {
+                      await request.acceptRequest(
+                        data[index].requestId,
+                        context,
+                      );
+                      print('ACCEPTED');
+                    },
+
                     title: request.names[data[index].senderId].toString(),
+
+                    trailing: _formatTime(data[index].createdAt),
 
                     leading: chat.extracting(
                       request.names[data[index].senderId].toString(),

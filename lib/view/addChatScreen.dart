@@ -1,5 +1,6 @@
 import 'package:chat_application/components/customFormField.dart';
 import 'package:chat_application/components/userTile.dart';
+import 'package:chat_application/models/requestModel.dart';
 import 'package:chat_application/providers/chatProvider.dart';
 import 'package:chat_application/view/userProfileScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -85,14 +86,30 @@ class _AddchatscreenState extends State<Addchatscreen> {
                     }
                     final user = data[index];
                     var title = chat.extracting(user.name);
+                    final isFriend = chat.isFriendWith(user.id);
                     final hasSentRequest = chat.hasSentRequestTo(user.id);
                     if (user.id ==
                         FirebaseAuth.instance.currentUser!.uid.toString()) {
                       return SizedBox.shrink();
                     }
+
+                    // Determine the action label and icon
+                    String actionLabel;
+                    IconData actionIcon;
+                    if (isFriend) {
+                      actionLabel = 'Friends';
+                      actionIcon = Icons.check_circle;
+                    } else if (hasSentRequest) {
+                      actionLabel = 'Requested';
+                      actionIcon = Icons.schedule;
+                    } else {
+                      actionLabel = 'Add';
+                      actionIcon = Icons.add;
+                    }
+
                     return Usertile(
                       onPressed: () async {
-                        if (hasSentRequest) {
+                        if (isFriend || hasSentRequest) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -108,8 +125,8 @@ class _AddchatscreenState extends State<Addchatscreen> {
                       leading: title,
                       title: user.name,
                       status: user.isOnline,
-                      actionLabel: hasSentRequest ? 'View profile' : 'Add',
-                      actionIcon: hasSentRequest ? Icons.person : Icons.add,
+                      actionLabel: actionLabel,
+                      actionIcon: actionIcon,
                     );
                   },
                 ),

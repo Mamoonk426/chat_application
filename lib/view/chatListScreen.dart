@@ -6,14 +6,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Chatscreen extends StatefulWidget {
-  const Chatscreen({super.key});
+class Chatlistscreen extends StatefulWidget {
+  const Chatlistscreen({super.key});
 
   @override
-  State<Chatscreen> createState() => _ChatscreenState();
+  State<Chatlistscreen> createState() => _ChatscreenState();
 }
 
-class _ChatscreenState extends State<Chatscreen> {
+class _ChatscreenState extends State<Chatlistscreen> {
   TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
