@@ -11,6 +11,7 @@ class Requestservices {
     return dbInstance
         .collection('friendRequests')
         .where('senderId', isEqualTo: senderId)
+        .where('status', isEqualTo: 'Pending')
         .snapshots()
         .map((snapshot) {
           final receiverIds = <String>{};

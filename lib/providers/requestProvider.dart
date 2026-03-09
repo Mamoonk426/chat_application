@@ -22,6 +22,24 @@ class Requestprovider with ChangeNotifier {
   Requestservices requestservices = Requestservices();
   List<RequestModel> _requests = [];
   List<RequestModel>? get requests => _requests;
+  Set<String> chips = {'Accepted', 'Pending'};
+  Set<String> selectedchips = {'Pending'}; // Restore default to Pending
+
+  void toggleChip(String chip) {
+    if (selectedchips.contains(chip)) {
+      selectedchips.remove(chip);
+    } else {
+      selectedchips.add(chip);
+    }
+    notifyListeners();
+  }
+
+  List<RequestModel> getFilteredRequests() {
+    if (selectedchips.isEmpty) return _requests;
+    return _requests.where((req) {
+      return selectedchips.contains(req.status);
+    }).toList();
+  }
   Future<void> listenTorecieveRequest() async {
     _recievedRequestsStream = requestservices
         .getSentRequestStream(FirebaseAuth.instance.currentUser!.uid.toString())

@@ -6,6 +6,7 @@ class Requesttile extends StatefulWidget {
   String? trailing;
   Function? confirmCall;
   Function? cancelCall;
+  Function? startChat;
   bool isAccepted;
   Requesttile({
     super.key,
@@ -15,6 +16,7 @@ class Requesttile extends StatefulWidget {
     this.cancelCall,
     this.confirmCall,
     this.isAccepted = false,
+    this.startChat,
   });
 
   @override
@@ -53,33 +55,32 @@ class _RequesttileState extends State<Requesttile> {
                   ),
                   SizedBox(height: 8),
                   if (widget.isAccepted)
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                            size: 18,
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            'You are friends now',
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
+                    InkWell(
+                      onTap: () => widget.startChat?.call(),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.chat, color: Colors.green, size: 18),
+                            SizedBox(width: 6),
+                            Text(
+                              'Start Chat',
+                              style: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     )
                   else
@@ -103,7 +104,7 @@ class _RequesttileState extends State<Requesttile> {
                         SizedBox(width: 8),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () => widget.cancelCall,
+                            onPressed: () => widget.cancelCall?.call(),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.grey,
                               padding: EdgeInsets.symmetric(

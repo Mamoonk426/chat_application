@@ -2,6 +2,7 @@ import 'package:chat_application/components/requestTile.dart';
 import 'package:chat_application/components/userTile.dart';
 import 'package:chat_application/providers/chatProvider.dart';
 import 'package:chat_application/providers/requestProvider.dart';
+import 'package:chat_application/view/chatScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -51,13 +52,28 @@ class _RequestscreenState extends State<Requestscreen> {
             SizedBox(height: 10),
             Divider(),
             SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              children: List.generate(request.chips.length, (index) {
+                final chip = request.chips.toList();
+                final fchip = chip[index];
+                return FilterChip(
+                  selected: request.selectedchips.contains(fchip),
+                  selectedColor: Theme.of(context).colorScheme.inversePrimary,
+                  label: Text(fchip),
+                  onSelected: (c) {
+                    request.toggleChip(fchip);
+                  },
+                );
+              }),
+            ),
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.zero,
-                itemCount: request.requests!.length,
+                itemCount: request.getFilteredRequests().length,
                 itemBuilder: (context, index) {
-                  final data = request.requests;
-                  if (data!.isEmpty) {
+                  final data = request.getFilteredRequests();
+                  if (data.isEmpty) {
                     return Center(
                       child: Text(
                         'No Data Found',
@@ -67,11 +83,19 @@ class _RequestscreenState extends State<Requestscreen> {
                   }
                   return Requesttile(
                     isAccepted: data[index].status == 'Accepted',
+                    startChat: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Chatscreen()),
+                      );
+                      print('Navigated');
+                    },
                     confirmCall: () async {
                       await request.acceptRequest(
                         data[index].requestId,
                         context,
                       );
+
                       print('ACCEPTED');
                     },
 

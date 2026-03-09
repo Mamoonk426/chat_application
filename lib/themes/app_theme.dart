@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 // =============================================================================
 
 class AppColors {
+  AppColors._();
+
   // ── Primary (Teal / Cyan scale) ──────────────────────────────────────────
   static const Color primary50 = Color(0xFFDBFAF8);
   static const Color primary100 = Color(0xFFAFF3EF);
@@ -56,6 +58,34 @@ class AppColors {
   static const Color surfaceDark = Color(0xFF0E625C);
   static const Color backgroundDark = Color(0xFF052422);
   static const Color onSurfaceDark = Color(0xFFDBFAF8);
+
+  // ── Chat / Messaging ──────────────────────────────────────────────────────
+  // Sent bubble — uses primary teal (matches Figma)
+  static const Color bubbleSent = Color(0xFF1CBBB0); // primary500
+  static const Color bubbleSentText = Color(0xFFFFFFFF);
+
+  // Received bubble — warm beige from Figma (added to theme)
+  static const Color bubbleReceived = Color(0xFFEDE5D8);
+  static const Color bubbleReceivedText = Color(0xFF083633); // primary800
+
+  // Warm chat screen background (slightly warmer than pure white)
+  static const Color chatBackground = Color(0xFFF2EDE3);
+
+  // Received bubble in dark mode — deep warm surface
+  static const Color bubbleReceivedDark = Color(0xFF1A2E2C);
+  static const Color bubbleReceivedTextDark = Color(0xFFDBFAF8);
+
+  // Sent bubble in dark mode
+  static const Color bubbleSentDark = Color(0xFF158E86); // primary600
+  static const Color bubbleSentTextDark = Color(0xFFFFFFFF);
+
+  // Timestamp text
+  static const Color bubbleTimestamp = Color(0xFF999999); // grey400
+  static const Color bubbleTimestampDark = Color(0xFF808080); // grey500
+
+  // Chat input bar
+  static const Color chatInputBackground = Color(0xFFFFFFFF);
+  static const Color chatInputBackgroundDark = Color(0xFF083633); // primary800
 }
 
 // =============================================================================
@@ -297,7 +327,7 @@ class AppTheme {
   static const double _radiusXl = 24.0;
 
   // ─── Elevation ────────────────────────────────────────────────────────────
-  static const double _elevationCard = 5.0;
+  static const double _elevationCard = 2.0;
   static const double _elevationDialog = 6.0;
   static const double _elevationNavBar = 8.0;
 
@@ -352,8 +382,8 @@ class AppTheme {
 
     // ── Bottom Navigation Bar ─────────────────────────────────────────────
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: AppColors.primary500,
-      selectedItemColor: AppColors.grey900,
+      backgroundColor: AppColors.grey0,
+      selectedItemColor: AppColors.primary500,
       unselectedItemColor: AppColors.grey400,
       elevation: _elevationNavBar,
       type: BottomNavigationBarType.fixed,
@@ -405,7 +435,7 @@ class AppTheme {
         foregroundColor: AppColors.grey0,
         disabledBackgroundColor: AppColors.grey200,
         disabledForegroundColor: AppColors.grey400,
-        elevation: 4,
+        elevation: 2,
         shadowColor: AppColors.primary500.withOpacity(0.4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(_radiusMd),
@@ -455,27 +485,19 @@ class AppTheme {
 
     // ── FloatingActionButton ──────────────────────────────────────────────
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.secondary900,
-      foregroundColor: Colors.white,
+      backgroundColor: AppColors.secondary500,
+      foregroundColor: AppColors.secondary900,
       elevation: 4,
       shape: CircleBorder(),
     ),
 
     // ── Card ──────────────────────────────────────────────────────────────
-    // ── Card ──────────────────────────────────────────────────────────────
     cardTheme: CardThemeData(
-      color: AppColors.primary50, // teal-tinted surface instead of pure white
-      elevation: 6, // slightly higher elevation
-      shadowColor: AppColors.primary600.withOpacity(
-        0.25,
-      ), // stronger, colored shadow
-      surfaceTintColor: AppColors.primary200, // M3 tint for depth
+      color: AppColors.grey0,
+      elevation: _elevationCard,
+      shadowColor: AppColors.primary500.withOpacity(0.12),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(_radiusLg),
-        side: const BorderSide(
-          color: AppColors.primary200, // subtle teal border
-          width: 1.0,
-        ),
       ),
       clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -682,6 +704,7 @@ class AppTheme {
       textStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.primary50),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     ),
+    extensions: const [AppChatTheme.light],
   );
 
   // =========================================================================
@@ -1005,6 +1028,7 @@ class AppTheme {
       textStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.primary50),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     ),
+    extensions: const [AppChatTheme.dark],
   );
 }
 
@@ -1035,4 +1059,120 @@ class AppTheme {
 //     google_fonts: ^6.0.0
 // Then replace const TextStyle(fontFamily: 'Poppins', ...) with:
 //   GoogleFonts.poppins(fontSize: ..., fontWeight: ...)
+// =============================================================================
+
+// =============================================================================
+// CHAT THEME EXTENSION
+// Provides typed access to chat-specific colors for both light & dark modes.
+// =============================================================================
+
+@immutable
+class AppChatTheme extends ThemeExtension<AppChatTheme> {
+  const AppChatTheme({
+    required this.bubbleSent,
+    required this.bubbleSentText,
+    required this.bubbleReceived,
+    required this.bubbleReceivedText,
+    required this.chatBackground,
+    required this.bubbleTimestamp,
+    required this.chatInputBackground,
+  });
+
+  final Color bubbleSent;
+  final Color bubbleSentText;
+  final Color bubbleReceived; // warm beige #F5F0E8 in light mode
+  final Color bubbleReceivedText;
+  final Color chatBackground; // warm off-white #FAF9F6 in light mode
+  final Color bubbleTimestamp;
+  final Color chatInputBackground;
+
+  // ── Light ────────────────────────────────────────────────────────────────
+  static const AppChatTheme light = AppChatTheme(
+    bubbleSent: AppColors.bubbleSent,
+    bubbleSentText: AppColors.bubbleSentText,
+    bubbleReceived: AppColors.bubbleReceived,
+    bubbleReceivedText: AppColors.bubbleReceivedText,
+    chatBackground: AppColors.chatBackground,
+    bubbleTimestamp: AppColors.bubbleTimestamp,
+    chatInputBackground: AppColors.chatInputBackground,
+  );
+
+  // ── Dark ─────────────────────────────────────────────────────────────────
+  static const AppChatTheme dark = AppChatTheme(
+    bubbleSent: AppColors.bubbleSentDark,
+    bubbleSentText: AppColors.bubbleSentTextDark,
+    bubbleReceived: AppColors.bubbleReceivedDark,
+    bubbleReceivedText: AppColors.bubbleReceivedTextDark,
+    chatBackground: AppColors.backgroundDark,
+    bubbleTimestamp: AppColors.bubbleTimestampDark,
+    chatInputBackground: AppColors.chatInputBackgroundDark,
+  );
+
+  @override
+  AppChatTheme copyWith({
+    Color? bubbleSent,
+    Color? bubbleSentText,
+    Color? bubbleReceived,
+    Color? bubbleReceivedText,
+    Color? chatBackground,
+    Color? bubbleTimestamp,
+    Color? chatInputBackground,
+  }) {
+    return AppChatTheme(
+      bubbleSent: bubbleSent ?? this.bubbleSent,
+      bubbleSentText: bubbleSentText ?? this.bubbleSentText,
+      bubbleReceived: bubbleReceived ?? this.bubbleReceived,
+      bubbleReceivedText: bubbleReceivedText ?? this.bubbleReceivedText,
+      chatBackground: chatBackground ?? this.chatBackground,
+      bubbleTimestamp: bubbleTimestamp ?? this.bubbleTimestamp,
+      chatInputBackground: chatInputBackground ?? this.chatInputBackground,
+    );
+  }
+
+  @override
+  AppChatTheme lerp(AppChatTheme? other, double t) {
+    if (other is! AppChatTheme) return this;
+    return AppChatTheme(
+      bubbleSent: Color.lerp(bubbleSent, other.bubbleSent, t)!,
+      bubbleSentText: Color.lerp(bubbleSentText, other.bubbleSentText, t)!,
+      bubbleReceived: Color.lerp(bubbleReceived, other.bubbleReceived, t)!,
+      bubbleReceivedText: Color.lerp(
+        bubbleReceivedText,
+        other.bubbleReceivedText,
+        t,
+      )!,
+      chatBackground: Color.lerp(chatBackground, other.chatBackground, t)!,
+      bubbleTimestamp: Color.lerp(bubbleTimestamp, other.bubbleTimestamp, t)!,
+      chatInputBackground: Color.lerp(
+        chatInputBackground,
+        other.chatInputBackground,
+        t,
+      )!,
+    );
+  }
+}
+
+// =============================================================================
+// HOW TO USE AppChatTheme
+// =============================================================================
+//
+// 1. Register the extension in your ThemeData (in AppTheme.light / AppTheme.dark):
+//
+//    ThemeData(
+//      extensions: const [AppChatTheme.light],  // light
+//      extensions: const [AppChatTheme.dark],   // dark
+//    )
+//
+// 2. Access anywhere in your widget tree:
+//
+//    final chat = Theme.of(context).extension<AppChatTheme>()!;
+//
+//    Container(
+//      color: chat.bubbleReceived,   // → warm beige #F5F0E8
+//      child: Text('Hello', style: TextStyle(color: chat.bubbleReceivedText)),
+//    )
+//
+// 3. Chat screen background:
+//    Scaffold(backgroundColor: chat.chatBackground) // → #FAF9F6
+//
 // =============================================================================
