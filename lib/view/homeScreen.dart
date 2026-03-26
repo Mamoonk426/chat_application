@@ -19,8 +19,6 @@ class _HomescreenState extends State<Homescreen> {
     print('B U I L D E D ');
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
         currentIndex: homeProvider.currentIndex,
         showSelectedLabels: true,
         showUnselectedLabels: false,

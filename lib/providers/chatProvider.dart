@@ -1,138 +1,97 @@
 import 'dart:async';
 
-import 'package:chat_application/components/Toasts.dart';
-import 'package:chat_application/models/requestModel.dart';
-import 'package:chat_application/models/userModel.dart';
-import 'package:chat_application/services/getUserServices.dart';
-import 'package:chat_application/services/requestServices.dart';
+import 'package:chat_application/models/chatModel.dart';
+import 'package:chat_application/models/messageModel.dart';
+import 'package:chat_application/services/chatServices.dart';
+import 'package:chat_application/services/notificationServices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Chatprovider with ChangeNotifier {
-  final Requestservices requestservices = Requestservices();
-  final Getuserservices getuserservices = Getuserservices();
+  Messagingservices messagingservices = Messagingservices();
+  List<ChatModel> chats = [];
+  List<MessageModel> _messages = [];
 
-  StreamSubscription<Set<String>>? _sentRequestsSubscription;
-  StreamSubscription<Set<String>>? _friendIdsSubscription;
-  Set<String> _sentRequestReceiverIds = {};
-  Set<String> _friendIds = {};
+  List<MessageModel> get messages => _messages;
 
-  bool hasSentRequestTo(String receiverId) {
-    return _sentRequestReceiverIds.contains(receiverId);
-  }
+  final Chatservices _chatservices = Chatservices();
+  StreamSubscription<List<ChatModel>>? _chatStream;
+  StreamSubscription<List<MessageModel>>? _messageStream;
 
-  bool isFriendWith(String userId) {
-    return _friendIds.contains(userId);
-  }
-
-  void listenFriendIds() {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) return;
-
-    _friendIdsSubscription?.cancel();
-    _friendIdsSubscription = requestservices
-        .friendIdsStream(currentUser.uid)
-        .listen((friendIds) {
-          _friendIds = friendIds;
-          notifyListeners();
-        });
-  }
-
-  void listenSentRequests() {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
-      _sentRequestsSubscription?.cancel();
-      _sentRequestsSubscription = null;
-      _sentRequestReceiverIds = {};
-      notifyListeners();
-      return;
+  Future<void> startChat(String receiverId, String message) async {
+    try {
+      await _chatservices.startChat(receiverId, message);
+    } catch (e) {
+      debugPrint('Error starting chat: $e');
     }
+  }
 
-    _sentRequestsSubscription?.cancel();
-    _sentRequestsSubscription = requestservices
-        .sentRequestReceiverIdsStream(currentUser.uid)
-        .listen((receiverIds) {
-          _sentRequestReceiverIds = receiverIds;
-          notifyListeners();
-        });
+  Future<void> sendNotification(
+    String chatId,
+    String message,
+    String senderName,
+    String receiverToken,
+    String receiverId,
+  ) async {
+    await messagingservices.sendNotification(
+      chatId: chatId,
+      receiverId: receiverId,
+      message: message,
+      senderName: senderName,
+      receiverToken: receiverToken,
+    );
+  }
 
-    listenFriendIds();
+  Future<void> chatListen() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    await _chatStream?.cancel();
+    _chatStream = _chatservices
+        .getChat(uid)
+        .listen(
+          (chatList) {
+            chats = chatList;
+            debugPrint('Provider: ${chats.length} chats synced from Firestore');
+            chats.sort(
+              (a, b) => b.lastMessageTime.compareTo(a.lastMessageTime),
+            );
+            for (var c in chats) {
+              debugPrint('Chat: ${c.lastMessage} | Time: ${c.lastMessageTime}');
+            }
+
+            notifyListeners();
+          },
+          onError: (error) {
+            debugPrint('Provider: Error loading chats: $error');
+          },
+        );
+  }
+
+  Future<void> listenToMessages(String receiverId) async {
+    final chatId = await _chatservices.generateChatId(receiverId);
+    await _messageStream?.cancel();
+    _messages = []; // Clear current messages when switching chats
+    _messageStream = _chatservices
+        .getMessages(chatId)
+        .listen(
+          (newMessages) {
+            _messages = newMessages;
+            debugPrint(
+              'Provider: ${_messages.length} messages synced for $chatId',
+            );
+            notifyListeners();
+          },
+          onError: (error) {
+            debugPrint('Provider: Error loading messages: $error');
+          },
+        );
   }
 
   @override
   void dispose() {
-    _sentRequestsSubscription?.cancel();
-    _friendIdsSubscription?.cancel();
+    _chatStream?.cancel();
+    _messageStream?.cancel();
     super.dispose();
-  }
-
-  String extracting(String name) {
-    List<String> splitName = name.split(' ');
-    String? title;
-    if (splitName.isEmpty) return " ";
-    if (splitName.length == 1) {
-      return title = splitName[0].substring(0, 1).toUpperCase();
-    } else if (!name.contains(RegExp(r'\s'))) {
-      return title = splitName[0].substring(0, 1).toUpperCase();
-    } else {
-      for (int i = 0; i < splitName.length; i++) {
-        if (i == splitName.length - 1) {
-          break;
-        }
-        title =
-            splitName[0].substring(0, 1) +
-            splitName[1].substring(0, 1).toUpperCase();
-      }
-      return title!;
-    }
-  }
-
-  String? _searchQuery;
-  String? get searchQuery => _searchQuery;
-
-  void setQuery(String? query) {
-    _searchQuery = query;
-    filterUser();
-    notifyListeners();
-  }
-
-  Future<List<Usermodel>> getUser() async {
-    final data = await getuserservices.getUsers();
-
-    _emaildata = data;
-    _filtereddata = _emaildata; // Show all users initially
-    notifyListeners();
-    return data;
-  }
-
-  List<Usermodel> _emaildata = [];
-  List<Usermodel> _filtereddata = [];
-  List<Usermodel> get filtereddata => _filtereddata;
-
-  List<Usermodel> filterUser() {
-    if (_searchQuery == null || _searchQuery!.trim().isEmpty) {
-      // Show all users when query is empty
-      _filtereddata = _emaildata;
-    } else {
-      _filtereddata = _emaildata
-          .where(
-            (user) =>
-                user.name.toLowerCase().contains(_searchQuery!.toLowerCase()),
-          )
-          .toList();
-    }
-    notifyListeners();
-    return _filtereddata;
-  }
-
-  Future<void> sendRequests(String recieverId, BuildContext context) async {
-    try {
-      await requestservices.sendRequest(recieverId);
-      _sentRequestReceiverIds = {..._sentRequestReceiverIds, recieverId};
-      notifyListeners();
-      Toasts.successToast('Request sent', context);
-    } catch (e) {
-      Toasts.errorToast(e.toString(), context);
-    }
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:chat_application/components/Toasts.dart';
 import 'package:chat_application/models/userModel.dart';
+import 'package:chat_application/services/notificationServices.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -36,8 +37,8 @@ class Authservices {
         name: name,
         email: email,
         createdAt: FieldValue.serverTimestamp(),
+        token: await Messagingservices().getToken(),
       );
-      currentUser = firebaseAuth.currentUser;
       await storeUser(usermodel);
     } on FirebaseAuthException catch (e) {
       Toasts.errorToast(e.message ?? 'Authentication error', context);

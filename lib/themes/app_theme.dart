@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // =============================================================================
-// COLOR PALETTE — based on Color Style Guide
+// COLOR PALETTE — Premium Slate & Indigo
 // =============================================================================
 
 class AppColors {
@@ -33,6 +34,7 @@ class AppColors {
 
   // ── Greys ─────────────────────────────────────────────────────────────────
   static const Color grey0 = Color(0xFFFFFFFF);
+  static const Color grey50 = Color(0xFFF4F4F4); // using F4F4F4 as light bg
   static const Color grey100 = Color(0xFFF4F4F4);
   static const Color grey200 = Color(0xFFCCCCCC);
   static const Color grey300 = Color(0xFFB3B3B3);
@@ -49,43 +51,16 @@ class AppColors {
   static const Color error = Color(0xFFE53935);
   static const Color info = Color(0xFF56E6DD);
 
-  // ── Surface / Background (light) ─────────────────────────────────────────
-  static const Color surfaceLight = Color(0xFFF4F4F4);
-  static const Color backgroundLight = Color(0xFFFFFFFF);
-  static const Color onSurfaceLight = Color(0xFF083633);
-
-  // ── Surface / Background (dark) ──────────────────────────────────────────
-  static const Color surfaceDark = Color(0xFF0E625C);
-  static const Color backgroundDark = Color(0xFF052422);
-  static const Color onSurfaceDark = Color(0xFFDBFAF8);
-
   // ── Chat / Messaging ──────────────────────────────────────────────────────
-  // Sent bubble — uses primary teal (matches Figma)
-  static const Color bubbleSent = Color(0xFF1CBBB0); // primary500
+  static const Color bubbleSent = Color(0xFF1CBBB0);
   static const Color bubbleSentText = Color(0xFFFFFFFF);
-
-  // Received bubble — warm beige from Figma (added to theme)
   static const Color bubbleReceived = Color(0xFFEDE5D8);
-  static const Color bubbleReceivedText = Color(0xFF083633); // primary800
-
-  // Warm chat screen background (slightly warmer than pure white)
+  static const Color bubbleReceivedText = Color(0xFF083633);
   static const Color chatBackground = Color(0xFFF2EDE3);
 
-  // Received bubble in dark mode — deep warm surface
+  static const Color bubbleSentDark = Color(0xFF158E86);
   static const Color bubbleReceivedDark = Color(0xFF1A2E2C);
   static const Color bubbleReceivedTextDark = Color(0xFFDBFAF8);
-
-  // Sent bubble in dark mode
-  static const Color bubbleSentDark = Color(0xFF158E86); // primary600
-  static const Color bubbleSentTextDark = Color(0xFFFFFFFF);
-
-  // Timestamp text
-  static const Color bubbleTimestamp = Color(0xFF999999); // grey400
-  static const Color bubbleTimestampDark = Color(0xFF808080); // grey500
-
-  // Chat input bar
-  static const Color chatInputBackground = Color(0xFFFFFFFF);
-  static const Color chatInputBackgroundDark = Color(0xFF083633); // primary800
 }
 
 // =============================================================================
@@ -95,121 +70,99 @@ class AppColors {
 class AppTextStyles {
   AppTextStyles._();
 
-  // Use GoogleFonts in your project:
-  //   flutter pub add google_fonts
-  //   import 'package:google_fonts/google_fonts.dart';
-  // Then replace TextStyle(...) with GoogleFonts.poppins(...) etc.
-
-  static const String _fontFamily = 'Poppins'; // swap with GoogleFonts
-
-  static const TextStyle displayLarge = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle displayLarge = GoogleFonts.poppins(
     fontSize: 57,
     fontWeight: FontWeight.w700,
     letterSpacing: -0.25,
     height: 1.12,
   );
 
-  static const TextStyle displayMedium = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle displayMedium = GoogleFonts.poppins(
     fontSize: 45,
     fontWeight: FontWeight.w700,
     height: 1.16,
   );
 
-  static const TextStyle displaySmall = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle displaySmall = GoogleFonts.poppins(
     fontSize: 36,
     fontWeight: FontWeight.w600,
     height: 1.22,
   );
 
-  static const TextStyle headlineLarge = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle headlineLarge = GoogleFonts.poppins(
     fontSize: 32,
     fontWeight: FontWeight.w600,
     height: 1.25,
   );
 
-  static const TextStyle headlineMedium = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle headlineMedium = GoogleFonts.poppins(
     fontSize: 28,
     fontWeight: FontWeight.w500,
     height: 1.29,
   );
 
-  static const TextStyle headlineSmall = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle headlineSmall = GoogleFonts.poppins(
     fontSize: 24,
     fontWeight: FontWeight.w500,
     height: 1.33,
   );
 
-  static const TextStyle titleLarge = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle titleLarge = GoogleFonts.poppins(
     fontSize: 22,
     fontWeight: FontWeight.w600,
     height: 1.27,
   );
 
-  static const TextStyle titleMedium = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle titleMedium = GoogleFonts.poppins(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.15,
     height: 1.50,
   );
 
-  static const TextStyle titleSmall = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle titleSmall = GoogleFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.1,
     height: 1.43,
   );
 
-  static const TextStyle bodyLarge = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle bodyLarge = GoogleFonts.poppins(
     fontSize: 16,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.5,
     height: 1.50,
   );
 
-  static const TextStyle bodyMedium = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle bodyMedium = GoogleFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.25,
     height: 1.43,
   );
 
-  static const TextStyle bodySmall = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle bodySmall = GoogleFonts.poppins(
     fontSize: 12,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.4,
     height: 1.33,
   );
 
-  static const TextStyle labelLarge = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle labelLarge = GoogleFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.1,
     height: 1.43,
   );
 
-  static const TextStyle labelMedium = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle labelMedium = GoogleFonts.poppins(
     fontSize: 12,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.5,
     height: 1.33,
   );
 
-  static const TextStyle labelSmall = TextStyle(
-    fontFamily: _fontFamily,
+  static TextStyle labelSmall = GoogleFonts.poppins(
     fontSize: 11,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.5,
@@ -218,853 +171,162 @@ class AppTextStyles {
 }
 
 // =============================================================================
-// COLOR SCHEME HELPERS
-// =============================================================================
-
-const ColorScheme _lightColorScheme = ColorScheme(
-  brightness: Brightness.light,
-
-  // Primary
-  primary: AppColors.primary500,
-  onPrimary: AppColors.grey0,
-  primaryContainer: AppColors.primary100,
-  onPrimaryContainer: AppColors.primary900,
-
-  // Secondary
-  secondary: AppColors.secondary500,
-  onSecondary: AppColors.secondary900,
-  secondaryContainer: AppColors.secondary100,
-  onSecondaryContainer: AppColors.secondary900,
-
-  // Tertiary — a muted teal mid-tone
-  tertiary: AppColors.primary300,
-  onTertiary: AppColors.primary900,
-  tertiaryContainer: AppColors.primary50,
-  onTertiaryContainer: AppColors.primary800,
-
-  // Error
-  error: AppColors.error,
-  onError: AppColors.grey0,
-  errorContainer: Color(0xFFFFDAD6),
-  onErrorContainer: Color(0xFF410002),
-
-  // Surface
-  surface: AppColors.surfaceLight,
-  onSurface: AppColors.onSurfaceLight,
-  surfaceContainerHighest: AppColors.grey200,
-
-  // Outline
-  outline: AppColors.grey400,
-  outlineVariant: AppColors.grey200,
-
-  // Inverse
-  inverseSurface: AppColors.grey800,
-  onInverseSurface: AppColors.grey100,
-  inversePrimary: AppColors.primary200,
-
-  // Shadow / scrim
-  shadow: AppColors.grey900,
-  scrim: AppColors.grey900,
-);
-
-const ColorScheme _darkColorScheme = ColorScheme(
-  brightness: Brightness.dark,
-
-  // Primary
-  primary: AppColors.primary300,
-  onPrimary: AppColors.primary900,
-  primaryContainer: AppColors.primary700,
-  onPrimaryContainer: AppColors.primary50,
-
-  // Secondary
-  secondary: AppColors.secondary400,
-  onSecondary: AppColors.secondary900,
-  secondaryContainer: AppColors.secondary800,
-  onSecondaryContainer: AppColors.secondary100,
-
-  // Tertiary
-  tertiary: AppColors.primary400,
-  onTertiary: AppColors.primary900,
-  tertiaryContainer: AppColors.primary800,
-  onTertiaryContainer: AppColors.primary100,
-
-  // Error
-  error: Color(0xFFFFB4AB),
-  onError: Color(0xFF690005),
-  errorContainer: Color(0xFF93000A),
-  onErrorContainer: Color(0xFFFFDAD6),
-
-  // Surface
-  surface: AppColors.backgroundDark,
-  onSurface: AppColors.onSurfaceDark,
-  surfaceContainerHighest: AppColors.primary800,
-
-  // Outline
-  outline: AppColors.grey500,
-  outlineVariant: AppColors.grey700,
-
-  // Inverse
-  inverseSurface: AppColors.grey100,
-  onInverseSurface: AppColors.grey800,
-  inversePrimary: AppColors.primary600,
-
-  // Shadow / scrim
-  shadow: AppColors.grey900,
-  scrim: AppColors.grey900,
-);
-
-// =============================================================================
 // THEME DATA
 // =============================================================================
 
 class AppTheme {
   AppTheme._();
 
-  // ─── Shared radius ───────────────────────────────────────────────────────
-  static const double _radiusSm = 8.0;
   static const double _radiusMd = 12.0;
   static const double _radiusLg = 16.0;
-  static const double _radiusXl = 24.0;
 
-  // ─── Elevation ────────────────────────────────────────────────────────────
-  static const double _elevationCard = 2.0;
-  static const double _elevationDialog = 6.0;
-  static const double _elevationNavBar = 8.0;
-
-  // =========================================================================
-  // LIGHT THEME
-  // =========================================================================
   static ThemeData get light => ThemeData(
     useMaterial3: true,
-    colorScheme: _lightColorScheme,
     brightness: Brightness.light,
-
-    // ── Typography ────────────────────────────────────────────────────────
-    textTheme:
-        const TextTheme(
-          displayLarge: AppTextStyles.displayLarge,
-          displayMedium: AppTextStyles.displayMedium,
-          displaySmall: AppTextStyles.displaySmall,
-          headlineLarge: AppTextStyles.headlineLarge,
-          headlineMedium: AppTextStyles.headlineMedium,
-          headlineSmall: AppTextStyles.headlineSmall,
-          titleLarge: AppTextStyles.titleLarge,
-          titleMedium: AppTextStyles.titleMedium,
-          titleSmall: AppTextStyles.titleSmall,
-          bodyLarge: AppTextStyles.bodyLarge,
-          bodyMedium: AppTextStyles.bodyMedium,
-          bodySmall: AppTextStyles.bodySmall,
-          labelLarge: AppTextStyles.labelLarge,
-          labelMedium: AppTextStyles.labelMedium,
-          labelSmall: AppTextStyles.labelSmall,
-        ).apply(
-          bodyColor: AppColors.onSurfaceLight,
-          displayColor: AppColors.onSurfaceLight,
-        ),
-
-    // ── Scaffold ─────────────────────────────────────────────────────────
-    scaffoldBackgroundColor: AppColors.backgroundLight,
-
-    // ── AppBar ────────────────────────────────────────────────────────────
-    appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.primary500,
-      foregroundColor: AppColors.grey0,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.primary500,
+      primary: AppColors.primary500,
+      secondary: AppColors.secondary500,
+      surface: AppColors.grey50,
+      onSurface: AppColors.grey900,
+    ),
+    textTheme: GoogleFonts.poppinsTextTheme().apply(
+      bodyColor: AppColors.grey900,
+      displayColor: AppColors.grey900,
+    ),
+    scaffoldBackgroundColor: AppColors.grey50,
+    appBarTheme: AppBarTheme(
+      backgroundColor: AppColors.grey50,
+      foregroundColor: AppColors.grey900,
       elevation: 0,
       centerTitle: true,
-      titleTextStyle: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: AppColors.grey0,
+      titleTextStyle: AppTextStyles.titleLarge.copyWith(
+        color: AppColors.grey900,
       ),
-      iconTheme: IconThemeData(color: AppColors.grey0),
+      iconTheme: const IconThemeData(color: AppColors.grey900),
     ),
-
-    // ── Bottom Navigation Bar ─────────────────────────────────────────────
+    cardTheme: CardThemeData(
+      color: AppColors.grey0,
+      elevation: 2,
+      shadowColor: AppColors.grey200.withOpacity(0.5),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(_radiusLg),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: AppColors.grey100,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(_radiusMd),
+        borderSide: const BorderSide(color: AppColors.grey300),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(_radiusMd),
+        borderSide: const BorderSide(color: AppColors.grey300),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(_radiusMd),
+        borderSide: const BorderSide(color: AppColors.primary500, width: 1.5),
+      ),
+      hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey400),
+      prefixIconColor: AppColors.grey500,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primary500,
+        foregroundColor: AppColors.grey0,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(_radiusMd),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        textStyle: AppTextStyles.labelLarge,
+      ),
+    ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: AppColors.grey0,
       selectedItemColor: AppColors.primary500,
       unselectedItemColor: AppColors.grey400,
-      elevation: _elevationNavBar,
       type: BottomNavigationBarType.fixed,
-      selectedLabelStyle: TextStyle(
-        fontFamily: 'Poppins',
-        fontWeight: FontWeight.w600,
-        fontSize: 12,
-      ),
-      unselectedLabelStyle: TextStyle(
-        fontFamily: 'Poppins',
-        fontWeight: FontWeight.w400,
-        fontSize: 12,
-      ),
-    ),
-
-    // ── NavigationBar (M3) ────────────────────────────────────────────────
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: AppColors.grey0,
-      indicatorColor: AppColors.primary100,
-      iconTheme: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) {
-          return const IconThemeData(color: AppColors.primary600);
-        }
-        return const IconThemeData(color: AppColors.grey500);
-      }),
-      labelTextStyle: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) {
-          return const TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w600,
-            fontSize: 12,
-            color: AppColors.primary600,
-          );
-        }
-        return const TextStyle(
-          fontFamily: 'Poppins',
-          fontWeight: FontWeight.w400,
-          fontSize: 12,
-          color: AppColors.grey500,
-        );
-      }),
-      elevation: _elevationNavBar,
-    ),
-
-    // ── Elevated Button ───────────────────────────────────────────────────
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary500,
-        foregroundColor: AppColors.grey0,
-        disabledBackgroundColor: AppColors.grey200,
-        disabledForegroundColor: AppColors.grey400,
-        elevation: 2,
-        shadowColor: AppColors.primary500.withOpacity(0.4),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_radiusMd),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        textStyle: AppTextStyles.labelLarge,
-      ),
-    ),
-
-    // ── Filled Button ─────────────────────────────────────────────────────
-    filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(
-        backgroundColor: AppColors.primary500,
-        foregroundColor: AppColors.grey0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_radiusMd),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        textStyle: AppTextStyles.labelLarge,
-      ),
-    ),
-
-    // ── Outlined Button ───────────────────────────────────────────────────
-    outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.primary500,
-        side: const BorderSide(color: AppColors.primary500, width: 1.5),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_radiusMd),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        textStyle: AppTextStyles.labelLarge,
-      ),
-    ),
-
-    // ── Text Button ───────────────────────────────────────────────────────
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: AppColors.primary600,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_radiusSm),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        textStyle: AppTextStyles.labelLarge,
-      ),
-    ),
-
-    // ── FloatingActionButton ──────────────────────────────────────────────
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.secondary500,
-      foregroundColor: AppColors.secondary900,
-      elevation: 4,
-      shape: CircleBorder(),
-    ),
-
-    // ── Card ──────────────────────────────────────────────────────────────
-    cardTheme: CardThemeData(
-      color: AppColors.grey0,
-      elevation: _elevationCard,
-      shadowColor: AppColors.primary500.withOpacity(0.12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_radiusLg),
-      ),
-      clipBehavior: Clip.antiAlias,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    ),
-
-    // ── Input Decoration ──────────────────────────────────────────────────
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: AppColors.primary50,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(_radiusMd),
-        borderSide: const BorderSide(color: AppColors.grey300),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(_radiusMd),
-        borderSide: const BorderSide(color: AppColors.grey300),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(_radiusMd),
-        borderSide: const BorderSide(color: AppColors.primary500, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(_radiusMd),
-        borderSide: const BorderSide(color: AppColors.error),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(_radiusMd),
-        borderSide: const BorderSide(color: AppColors.error, width: 2),
-      ),
-      labelStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey600),
-      hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey400),
-      prefixIconColor: AppColors.primary500,
-      suffixIconColor: AppColors.grey500,
-    ),
-
-    // ── Chip ──────────────────────────────────────────────────────────────
-    chipTheme: ChipThemeData(
-      backgroundColor: AppColors.primary50,
-      selectedColor: AppColors.primary500,
-      secondarySelectedColor: AppColors.secondary500,
-      labelStyle: AppTextStyles.labelMedium.copyWith(
-        color: AppColors.primary700,
-      ),
-      secondaryLabelStyle: AppTextStyles.labelMedium.copyWith(
-        color: AppColors.grey0,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_radiusXl),
-        side: const BorderSide(color: AppColors.primary200),
-      ),
-    ),
-
-    // ── Dialog ────────────────────────────────────────────────────────────
-    dialogTheme: DialogThemeData(
-      backgroundColor: AppColors.grey0,
-      elevation: _elevationDialog,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_radiusXl),
-      ),
-      titleTextStyle: AppTextStyles.titleLarge.copyWith(
-        color: AppColors.primary800,
-      ),
-      contentTextStyle: AppTextStyles.bodyMedium.copyWith(
-        color: AppColors.grey700,
-      ),
-    ),
-
-    // ── BottomSheet ───────────────────────────────────────────────────────
-    bottomSheetTheme: const BottomSheetThemeData(
-      backgroundColor: AppColors.grey0,
-      modalBackgroundColor: AppColors.grey0,
-      elevation: _elevationDialog,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(_radiusXl)),
-      ),
-      clipBehavior: Clip.antiAlias,
-    ),
-
-    // ── Snack Bar ─────────────────────────────────────────────────────────
-    snackBarTheme: SnackBarThemeData(
-      backgroundColor: AppColors.primary800,
-      contentTextStyle: AppTextStyles.bodyMedium.copyWith(
-        color: AppColors.primary50,
-      ),
-      actionTextColor: AppColors.secondary400,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_radiusMd),
-      ),
-    ),
-
-    // ── Divider ───────────────────────────────────────────────────────────
-    dividerTheme: const DividerThemeData(
-      color: AppColors.grey200,
-      thickness: 1,
-      space: 1,
-    ),
-
-    // ── Switch ────────────────────────────────────────────────────────────
-    switchTheme: SwitchThemeData(
-      thumbColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return AppColors.grey0;
-        return AppColors.grey400;
-      }),
-      trackColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return AppColors.primary500;
-        return AppColors.grey200;
-      }),
-    ),
-
-    // ── Checkbox ─────────────────────────────────────────────────────────
-    checkboxTheme: CheckboxThemeData(
-      fillColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return AppColors.primary500;
-        return Colors.transparent;
-      }),
-      checkColor: WidgetStateProperty.all(AppColors.grey0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-      side: const BorderSide(color: AppColors.grey400, width: 1.5),
-    ),
-
-    // ── Radio ─────────────────────────────────────────────────────────────
-    radioTheme: RadioThemeData(
-      fillColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return AppColors.primary500;
-        return AppColors.grey400;
-      }),
-    ),
-
-    // ── Slider ────────────────────────────────────────────────────────────
-    sliderTheme: const SliderThemeData(
-      activeTrackColor: AppColors.primary500,
-      inactiveTrackColor: AppColors.primary100,
-      thumbColor: AppColors.primary500,
-      overlayColor: Color(0x291CBBB0),
-      valueIndicatorColor: AppColors.primary700,
-      valueIndicatorTextStyle: TextStyle(
-        color: AppColors.grey0,
-        fontFamily: 'Poppins',
-        fontSize: 12,
-      ),
-    ),
-
-    // ── Progress Indicator ────────────────────────────────────────────────
-    progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: AppColors.primary500,
-      linearTrackColor: AppColors.primary100,
-      circularTrackColor: AppColors.primary100,
-    ),
-
-    // ── Tab Bar ───────────────────────────────────────────────────────────
-    tabBarTheme: const TabBarThemeData(
-      labelColor: AppColors.primary500,
-      unselectedLabelColor: AppColors.grey500,
-      indicatorColor: AppColors.primary500,
-      indicatorSize: TabBarIndicatorSize.label,
-      labelStyle: TextStyle(
-        fontFamily: 'Poppins',
-        fontWeight: FontWeight.w600,
-        fontSize: 14,
-      ),
-      unselectedLabelStyle: TextStyle(
-        fontFamily: 'Poppins',
-        fontWeight: FontWeight.w400,
-        fontSize: 14,
-      ),
-    ),
-
-    // ── List Tile ────────────────────────────────────────────────────────
-    listTileTheme: const ListTileThemeData(
-      iconColor: AppColors.primary500,
-      textColor: AppColors.onSurfaceLight,
-      tileColor: Colors.transparent,
-      selectedTileColor: AppColors.primary50,
-      selectedColor: AppColors.primary600,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(_radiusMd)),
-      ),
-    ),
-
-    // ── Icon ─────────────────────────────────────────────────────────────
-    iconTheme: const IconThemeData(color: AppColors.primary600, size: 24),
-
-    // ── Drawer ────────────────────────────────────────────────────────────
-    drawerTheme: const DrawerThemeData(
-      backgroundColor: AppColors.grey0,
-      elevation: _elevationDialog,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.horizontal(
-          right: Radius.circular(_radiusXl),
-        ),
-      ),
-    ),
-
-    // ── Tooltip ───────────────────────────────────────────────────────────
-    tooltipTheme: TooltipThemeData(
-      decoration: BoxDecoration(
-        color: AppColors.primary800,
-        borderRadius: BorderRadius.circular(_radiusSm),
-      ),
-      textStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.primary50),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      elevation: 10,
     ),
     extensions: const [AppChatTheme.light],
   );
 
-  // =========================================================================
-  // DARK THEME
-  // =========================================================================
   static ThemeData get dark => ThemeData(
     useMaterial3: true,
-    colorScheme: _darkColorScheme,
     brightness: Brightness.dark,
-
-    // ── Typography ────────────────────────────────────────────────────────
-    textTheme:
-        const TextTheme(
-          displayLarge: AppTextStyles.displayLarge,
-          displayMedium: AppTextStyles.displayMedium,
-          displaySmall: AppTextStyles.displaySmall,
-          headlineLarge: AppTextStyles.headlineLarge,
-          headlineMedium: AppTextStyles.headlineMedium,
-          headlineSmall: AppTextStyles.headlineSmall,
-          titleLarge: AppTextStyles.titleLarge,
-          titleMedium: AppTextStyles.titleMedium,
-          titleSmall: AppTextStyles.titleSmall,
-          bodyLarge: AppTextStyles.bodyLarge,
-          bodyMedium: AppTextStyles.bodyMedium,
-          bodySmall: AppTextStyles.bodySmall,
-          labelLarge: AppTextStyles.labelLarge,
-          labelMedium: AppTextStyles.labelMedium,
-          labelSmall: AppTextStyles.labelSmall,
-        ).apply(
-          bodyColor: AppColors.onSurfaceDark,
-          displayColor: AppColors.onSurfaceDark,
-        ),
-
-    // ── Scaffold ─────────────────────────────────────────────────────────
-    scaffoldBackgroundColor: AppColors.backgroundDark,
-
-    // ── AppBar ────────────────────────────────────────────────────────────
-    appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.primary800,
-      foregroundColor: AppColors.primary50,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.primary500,
+      brightness: Brightness.dark,
+      primary: AppColors.primary400,
+      secondary: AppColors.secondary500,
+      surface: AppColors.grey900,
+      onSurface: AppColors.grey50,
+    ),
+    textTheme: GoogleFonts.poppinsTextTheme(
+      ThemeData.dark().textTheme,
+    ).apply(bodyColor: AppColors.grey50, displayColor: AppColors.grey50),
+    scaffoldBackgroundColor: AppColors.grey900,
+    appBarTheme: AppBarTheme(
+      backgroundColor: AppColors.grey900,
+      foregroundColor: AppColors.grey50,
       elevation: 0,
       centerTitle: true,
-      titleTextStyle: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: AppColors.primary50,
+      titleTextStyle: AppTextStyles.titleLarge.copyWith(
+        color: AppColors.grey50,
       ),
-      iconTheme: IconThemeData(color: AppColors.primary100),
+      iconTheme: const IconThemeData(color: AppColors.grey50),
     ),
-
-    // ── Bottom Navigation Bar ─────────────────────────────────────────────
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: AppColors.primary900,
-      selectedItemColor: AppColors.primary300,
-      unselectedItemColor: AppColors.grey500,
-      elevation: _elevationNavBar,
-      type: BottomNavigationBarType.fixed,
-    ),
-
-    // ── NavigationBar (M3) ────────────────────────────────────────────────
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: AppColors.primary900,
-      indicatorColor: AppColors.primary700,
-      iconTheme: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) {
-          return const IconThemeData(color: AppColors.primary200);
-        }
-        return const IconThemeData(color: AppColors.grey500);
-      }),
-    ),
-
-    // ── Elevated Button ───────────────────────────────────────────────────
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary400,
-        foregroundColor: AppColors.primary900,
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_radiusMd),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        textStyle: AppTextStyles.labelLarge,
-      ),
-    ),
-
-    // ── Filled Button ─────────────────────────────────────────────────────
-    filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(
-        backgroundColor: AppColors.primary400,
-        foregroundColor: AppColors.primary900,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_radiusMd),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        textStyle: AppTextStyles.labelLarge,
-      ),
-    ),
-
-    // ── Outlined Button ───────────────────────────────────────────────────
-    outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.primary300,
-        side: const BorderSide(color: AppColors.primary400, width: 1.5),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_radiusMd),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        textStyle: AppTextStyles.labelLarge,
-      ),
-    ),
-
-    // ── Text Button ───────────────────────────────────────────────────────
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: AppColors.primary300,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_radiusSm),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        textStyle: AppTextStyles.labelLarge,
-      ),
-    ),
-
-    // ── FloatingActionButton ──────────────────────────────────────────────
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.secondary500,
-      foregroundColor: AppColors.secondary900,
-      elevation: 4,
-      shape: CircleBorder(),
-    ),
-
-    // ── Card ──────────────────────────────────────────────────────────────
     cardTheme: CardThemeData(
-      color: AppColors.primary800,
-      elevation: _elevationCard,
-      shadowColor: Colors.black54,
+      color: AppColors.grey800,
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(_radiusLg),
       ),
-      clipBehavior: Clip.antiAlias,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     ),
-
-    // ── Input Decoration ──────────────────────────────────────────────────
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.primary900,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      fillColor: AppColors.grey800,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(_radiusMd),
-        borderSide: const BorderSide(color: AppColors.primary700),
+        borderSide: const BorderSide(color: AppColors.grey700),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(_radiusMd),
-        borderSide: const BorderSide(color: AppColors.primary700),
+        borderSide: const BorderSide(color: AppColors.grey700),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(_radiusMd),
-        borderSide: const BorderSide(color: AppColors.primary300, width: 2),
+        borderSide: const BorderSide(color: AppColors.primary400, width: 1.5),
       ),
-      labelStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey400),
-      hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey600),
-      prefixIconColor: AppColors.primary300,
-      suffixIconColor: AppColors.grey500,
+      hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey500),
+      prefixIconColor: AppColors.grey400,
     ),
-
-    // ── Chip ──────────────────────────────────────────────────────────────
-    chipTheme: ChipThemeData(
-      backgroundColor: AppColors.primary800,
-      selectedColor: AppColors.primary500,
-      labelStyle: AppTextStyles.labelMedium.copyWith(
-        color: AppColors.primary200,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_radiusXl),
-        side: const BorderSide(color: AppColors.primary700),
-      ),
-    ),
-
-    // ── Dialog ────────────────────────────────────────────────────────────
-    dialogTheme: DialogThemeData(
-      backgroundColor: AppColors.primary800,
-      elevation: _elevationDialog,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_radiusXl),
-      ),
-      titleTextStyle: AppTextStyles.titleLarge.copyWith(
-        color: AppColors.primary100,
-      ),
-      contentTextStyle: AppTextStyles.bodyMedium.copyWith(
-        color: AppColors.grey300,
-      ),
-    ),
-
-    // ── BottomSheet ───────────────────────────────────────────────────────
-    bottomSheetTheme: const BottomSheetThemeData(
-      backgroundColor: AppColors.primary800,
-      modalBackgroundColor: AppColors.primary800,
-      elevation: _elevationDialog,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(_radiusXl)),
-      ),
-      clipBehavior: Clip.antiAlias,
-    ),
-
-    // ── Snack Bar ─────────────────────────────────────────────────────────
-    snackBarTheme: SnackBarThemeData(
-      backgroundColor: AppColors.primary700,
-      contentTextStyle: AppTextStyles.bodyMedium.copyWith(
-        color: AppColors.primary50,
-      ),
-      actionTextColor: AppColors.secondary400,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(_radiusMd),
-      ),
-    ),
-
-    // ── Divider ───────────────────────────────────────────────────────────
-    dividerTheme: const DividerThemeData(
-      color: AppColors.primary700,
-      thickness: 1,
-      space: 1,
-    ),
-
-    // ── Switch ────────────────────────────────────────────────────────────
-    switchTheme: SwitchThemeData(
-      thumbColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return AppColors.primary900;
-        return AppColors.grey600;
-      }),
-      trackColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return AppColors.primary300;
-        return AppColors.grey700;
-      }),
-    ),
-
-    // ── Checkbox ─────────────────────────────────────────────────────────
-    checkboxTheme: CheckboxThemeData(
-      fillColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return AppColors.primary400;
-        return Colors.transparent;
-      }),
-      checkColor: WidgetStateProperty.all(AppColors.primary900),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-      side: const BorderSide(color: AppColors.primary600, width: 1.5),
-    ),
-
-    // ── Radio ─────────────────────────────────────────────────────────────
-    radioTheme: RadioThemeData(
-      fillColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return AppColors.primary300;
-        return AppColors.grey600;
-      }),
-    ),
-
-    // ── Slider ────────────────────────────────────────────────────────────
-    sliderTheme: const SliderThemeData(
-      activeTrackColor: AppColors.primary300,
-      inactiveTrackColor: AppColors.primary800,
-      thumbColor: AppColors.primary300,
-      overlayColor: Color(0x2983EDE6),
-      valueIndicatorColor: AppColors.primary600,
-      valueIndicatorTextStyle: TextStyle(
-        color: AppColors.primary50,
-        fontFamily: 'Poppins',
-        fontSize: 12,
-      ),
-    ),
-
-    // ── Progress Indicator ────────────────────────────────────────────────
-    progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: AppColors.primary300,
-      linearTrackColor: AppColors.primary800,
-      circularTrackColor: AppColors.primary800,
-    ),
-
-    // ── Tab Bar ───────────────────────────────────────────────────────────
-    tabBarTheme: const TabBarThemeData(
-      labelColor: AppColors.primary300,
-      unselectedLabelColor: AppColors.grey500,
-      indicatorColor: AppColors.primary300,
-      indicatorSize: TabBarIndicatorSize.label,
-    ),
-
-    // ── List Tile ────────────────────────────────────────────────────────
-    listTileTheme: const ListTileThemeData(
-      iconColor: AppColors.primary300,
-      textColor: AppColors.onSurfaceDark,
-      tileColor: Colors.transparent,
-      selectedTileColor: AppColors.primary800,
-      selectedColor: AppColors.primary200,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(_radiusMd)),
-      ),
-    ),
-
-    // ── Icon ─────────────────────────────────────────────────────────────
-    iconTheme: const IconThemeData(color: AppColors.primary300, size: 24),
-
-    // ── Drawer ────────────────────────────────────────────────────────────
-    drawerTheme: const DrawerThemeData(
-      backgroundColor: AppColors.primary900,
-      elevation: _elevationDialog,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.horizontal(
-          right: Radius.circular(_radiusXl),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primary400,
+        foregroundColor: AppColors.grey900,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(_radiusMd),
         ),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        textStyle: AppTextStyles.labelLarge,
       ),
     ),
-
-    // ── Tooltip ───────────────────────────────────────────────────────────
-    tooltipTheme: TooltipThemeData(
-      decoration: BoxDecoration(
-        color: AppColors.primary600,
-        borderRadius: BorderRadius.circular(_radiusSm),
-      ),
-      textStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.primary50),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: AppColors.grey900,
+      selectedItemColor: AppColors.primary400,
+      unselectedItemColor: AppColors.grey600,
+      type: BottomNavigationBarType.fixed,
+      elevation: 10,
     ),
     extensions: const [AppChatTheme.dark],
   );
 }
-
-// =============================================================================
-// HOW TO USE IN main.dart
-// =============================================================================
-//
-// import 'app_theme.dart';
-//
-// MaterialApp(
-//   title: 'My App',
-//   theme: AppTheme.light,
-//   darkTheme: AppTheme.dark,
-//   themeMode: ThemeMode.system, // or ThemeMode.light / ThemeMode.dark
-//   home: const MyHomePage(),
-// );
-//
-// Access colors anywhere:
-//   AppColors.primary500
-//   Theme.of(context).colorScheme.primary
-//
-// Access text styles anywhere:
-//   AppTextStyles.titleLarge
-//   Theme.of(context).textTheme.titleLarge
-//
-// For Google Fonts support, add to pubspec.yaml:
-//   dependencies:
-//     google_fonts: ^6.0.0
-// Then replace const TextStyle(fontFamily: 'Poppins', ...) with:
-//   GoogleFonts.poppins(fontSize: ..., fontWeight: ...)
-// =============================================================================
-
-// =============================================================================
-// CHAT THEME EXTENSION
-// Provides typed access to chat-specific colors for both light & dark modes.
-// =============================================================================
 
 @immutable
 class AppChatTheme extends ThemeExtension<AppChatTheme> {
@@ -1074,38 +336,28 @@ class AppChatTheme extends ThemeExtension<AppChatTheme> {
     required this.bubbleReceived,
     required this.bubbleReceivedText,
     required this.chatBackground,
-    required this.bubbleTimestamp,
-    required this.chatInputBackground,
   });
 
   final Color bubbleSent;
   final Color bubbleSentText;
-  final Color bubbleReceived; // warm beige #F5F0E8 in light mode
+  final Color bubbleReceived;
   final Color bubbleReceivedText;
-  final Color chatBackground; // warm off-white #FAF9F6 in light mode
-  final Color bubbleTimestamp;
-  final Color chatInputBackground;
+  final Color chatBackground;
 
-  // ── Light ────────────────────────────────────────────────────────────────
   static const AppChatTheme light = AppChatTheme(
     bubbleSent: AppColors.bubbleSent,
     bubbleSentText: AppColors.bubbleSentText,
     bubbleReceived: AppColors.bubbleReceived,
     bubbleReceivedText: AppColors.bubbleReceivedText,
     chatBackground: AppColors.chatBackground,
-    bubbleTimestamp: AppColors.bubbleTimestamp,
-    chatInputBackground: AppColors.chatInputBackground,
   );
 
-  // ── Dark ─────────────────────────────────────────────────────────────────
   static const AppChatTheme dark = AppChatTheme(
     bubbleSent: AppColors.bubbleSentDark,
-    bubbleSentText: AppColors.bubbleSentTextDark,
+    bubbleSentText: AppColors.grey50,
     bubbleReceived: AppColors.bubbleReceivedDark,
     bubbleReceivedText: AppColors.bubbleReceivedTextDark,
-    chatBackground: AppColors.backgroundDark,
-    bubbleTimestamp: AppColors.bubbleTimestampDark,
-    chatInputBackground: AppColors.chatInputBackgroundDark,
+    chatBackground: AppColors.grey900,
   );
 
   @override
@@ -1115,19 +367,13 @@ class AppChatTheme extends ThemeExtension<AppChatTheme> {
     Color? bubbleReceived,
     Color? bubbleReceivedText,
     Color? chatBackground,
-    Color? bubbleTimestamp,
-    Color? chatInputBackground,
-  }) {
-    return AppChatTheme(
-      bubbleSent: bubbleSent ?? this.bubbleSent,
-      bubbleSentText: bubbleSentText ?? this.bubbleSentText,
-      bubbleReceived: bubbleReceived ?? this.bubbleReceived,
-      bubbleReceivedText: bubbleReceivedText ?? this.bubbleReceivedText,
-      chatBackground: chatBackground ?? this.chatBackground,
-      bubbleTimestamp: bubbleTimestamp ?? this.bubbleTimestamp,
-      chatInputBackground: chatInputBackground ?? this.chatInputBackground,
-    );
-  }
+  }) => AppChatTheme(
+    bubbleSent: bubbleSent ?? this.bubbleSent,
+    bubbleSentText: bubbleSentText ?? this.bubbleSentText,
+    bubbleReceived: bubbleReceived ?? this.bubbleReceived,
+    bubbleReceivedText: bubbleReceivedText ?? this.bubbleReceivedText,
+    chatBackground: chatBackground ?? this.chatBackground,
+  );
 
   @override
   AppChatTheme lerp(AppChatTheme? other, double t) {
@@ -1142,37 +388,6 @@ class AppChatTheme extends ThemeExtension<AppChatTheme> {
         t,
       )!,
       chatBackground: Color.lerp(chatBackground, other.chatBackground, t)!,
-      bubbleTimestamp: Color.lerp(bubbleTimestamp, other.bubbleTimestamp, t)!,
-      chatInputBackground: Color.lerp(
-        chatInputBackground,
-        other.chatInputBackground,
-        t,
-      )!,
     );
   }
 }
-
-// =============================================================================
-// HOW TO USE AppChatTheme
-// =============================================================================
-//
-// 1. Register the extension in your ThemeData (in AppTheme.light / AppTheme.dark):
-//
-//    ThemeData(
-//      extensions: const [AppChatTheme.light],  // light
-//      extensions: const [AppChatTheme.dark],   // dark
-//    )
-//
-// 2. Access anywhere in your widget tree:
-//
-//    final chat = Theme.of(context).extension<AppChatTheme>()!;
-//
-//    Container(
-//      color: chat.bubbleReceived,   // → warm beige #F5F0E8
-//      child: Text('Hello', style: TextStyle(color: chat.bubbleReceivedText)),
-//    )
-//
-// 3. Chat screen background:
-//    Scaffold(backgroundColor: chat.chatBackground) // → #FAF9F6
-//
-// =============================================================================

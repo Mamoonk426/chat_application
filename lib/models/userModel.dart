@@ -10,6 +10,7 @@ class Usermodel {
   final bool isOnline;
   final DateTime? lastSeen;
   final FieldValue createdAt;
+  final String? token;
 
   const Usermodel({
     required this.id,
@@ -20,6 +21,7 @@ class Usermodel {
     this.isOnline = false,
     this.lastSeen,
     required this.createdAt,
+    this.token,
   });
 
   /// Create a User from a JSON/Firestore map
@@ -35,6 +37,7 @@ class Usermodel {
           ? DateTime.fromMillisecondsSinceEpoch(map['lastSeen'] as int)
           : null,
       createdAt: FieldValue.serverTimestamp(),
+      token: map['token'] as String?,
     );
   }
 
@@ -49,6 +52,7 @@ class Usermodel {
       'isOnline': isOnline,
       'lastSeen': lastSeen?.millisecondsSinceEpoch,
       'createdAt': createdAt,
+      'token': token,
     };
   }
 

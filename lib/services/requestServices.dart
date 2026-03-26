@@ -26,46 +26,28 @@ class Requestservices {
   }
 
   Stream<Set<String>> friendIdsStream(String userId) {
-    // Listen to requests SENT by this user that were accepted
-    final sentStream = dbInstance
-        .collection('friendRequests')
-        .where('senderId', isEqualTo: userId)
-        .where('status', isEqualTo: 'Accepted')
+    return dbInstance
+        .collection('friends')
+        .doc(userId)
+        .collection('friends')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.id).toSet());
+  }
+
+  Stream<List<Map<String, dynamic>>> getFriendsStream(String userId) {
+    return dbInstance
+        .collection('friends')
+        .doc(userId)
+        .collection('friends')
+        .orderBy('addedAt', descending: true)
         .snapshots()
         .map((snapshot) {
-          final ids = <String>{};
-          for (final doc in snapshot.docs) {
-            final receiverId = doc.data()['recieverId'];
-            if (receiverId is String) {
-              ids.add(receiverId);
-            }
-          }
-          return ids;
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            data['id'] = doc.id;
+            return data;
+          }).toList();
         });
-
-    // Listen to requests RECEIVED by this user that were accepted
-    final receivedStream = dbInstance
-        .collection('friendRequests')
-        .where('recieverId', isEqualTo: userId)
-        .where('status', isEqualTo: 'Accepted')
-        .snapshots()
-        .map((snapshot) {
-          final ids = <String>{};
-          for (final doc in snapshot.docs) {
-            final senderId = doc.data()['senderId'];
-            if (senderId is String) {
-              ids.add(senderId);
-            }
-          }
-          return ids;
-        });
-
-    // Combine both streams
-    return sentStream.asyncExpand((sentIds) {
-      return receivedStream.map((receivedIds) {
-        return {...sentIds, ...receivedIds};
-      });
-    });
   }
 
   Future<void> sendRequest(String receiverId) async {
@@ -73,21 +55,30 @@ class Requestservices {
     if (currentUser == null) {
       throw Exception('User need to Login first');
     }
+
+    // Fetch display names for both sender and receiver
+    final senderDoc = await dbInstance
+        .collection('Users')
+        .doc(currentUser.uid)
+        .get();
+    final receiverDoc = await dbInstance
+        .collection('Users')
+        .doc(receiverId)
+        .get();
+    final senderName = senderDoc.data()?['name'] as String? ?? '';
+    final receiverName = receiverDoc.data()?['name'] as String? ?? '';
+
     final docRef = dbInstance.collection('friendRequests').doc();
     final request = RequestModel(
       requestId: docRef.id,
       senderId: currentUser.uid,
       receiverId: receiverId,
+      senderName: senderName,
+      receiverName: receiverName,
       status: 'Pending',
       createdAt: DateTime.now(),
     );
     await docRef.set(request.toMap());
-    //   'senderId': currentUser.uid,
-    //   'recieverId': recieverId,
-    //   'requestId': docRef.id,
-    //   'status': 'Pending',
-
-    // });
   }
 
   Future<void> listenRequest(RequestModel requestmodel) async {
@@ -101,6 +92,7 @@ class Requestservices {
     return dbInstance
         .collection('friendRequests')
         .where('recieverId', isEqualTo: receiverId)
+        .where('status', isEqualTo: 'Pending')
         .snapshots()
         .map((snapshots) {
           return snapshots.docs
@@ -145,9 +137,105 @@ class Requestservices {
   }
 
   Future<void> acceptRequest(String docId, BuildContext context) async {
-    await dbInstance.collection('friendRequests').doc(docId).update({
-      'status': 'Accepted',
-    });
-    Toasts.successToast('Requested Accepted', context);
+    try {
+      final docSnapshot = await dbInstance
+          .collection('friendRequests')
+          .doc(docId)
+          .get();
+      if (!docSnapshot.exists) return;
+
+      final data = docSnapshot.data()!;
+      final senderId = data['senderId'] as String;
+      final receiverId = (data['receiverId'] ?? data['recieverId']) as String;
+      final senderName = data['senderName'] as String? ?? 'Friend';
+      final receiverName = data['receiverName'] as String? ?? 'Friend';
+
+      final batch = dbInstance.batch();
+
+      // Add to sender's friend list
+      batch.set(
+        dbInstance
+            .collection('friends')
+            .doc(senderId)
+            .collection('friends')
+            .doc(receiverId),
+        {'name': receiverName, 'addedAt': FieldValue.serverTimestamp()},
+      );
+
+      // Add to receiver's friend list
+      batch.set(
+        dbInstance
+            .collection('friends')
+            .doc(receiverId)
+            .collection('friends')
+            .doc(senderId),
+        {'name': senderName, 'addedAt': FieldValue.serverTimestamp()},
+      );
+
+      // Delete the request
+      batch.delete(dbInstance.collection('friendRequests').doc(docId));
+
+      await batch.commit();
+
+      if (context.mounted) {
+        Toasts.successToast('Friend request accepted', context);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Toasts.errorToast('Failed to accept request: ${e.toString()}', context);
+      }
+    }
+  }
+
+  /// Streams all requests SENT BY the current user.
+  Stream<List<RequestModel>> getSentByMeRequestStream(String senderId) {
+    return dbInstance
+        .collection('friendRequests')
+        .where('senderId', isEqualTo: senderId)
+        .where('status', isEqualTo: 'Pending')
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs
+              .map((doc) => RequestModel.fromMap(doc.data()))
+              .toList();
+        });
+  }
+
+  /// Streams a map of receiverId → display name for sent requests.
+  Stream<Map<String, String>> getReceiverNamesStream() {
+    final currentId = FirebaseAuth.instance.currentUser!.uid;
+    return dbInstance
+        .collection('friendRequests')
+        .where('senderId', isEqualTo: currentId)
+        .snapshots(includeMetadataChanges: false)
+        .asyncMap((snapshot) async {
+          Map<String, String> names = {};
+
+          for (var doc in snapshot.docs) {
+            final receiverId =
+                (doc.data()['receiverId'] ?? doc.data()['recieverId'])
+                    as String?;
+            if (receiverId == null) continue;
+
+            final userDoc = await dbInstance
+                .collection('Users')
+                .doc(receiverId)
+                .get();
+            final name = userDoc.data()?['name'] as String?;
+
+            if (name != null) {
+              names[receiverId] = name;
+            }
+          }
+
+          return names;
+        })
+        .distinct((prev, next) {
+          if (prev.length != next.length) return false;
+          for (final key in prev.keys) {
+            if (prev[key] != next[key]) return false;
+          }
+          return true;
+        });
   }
 }

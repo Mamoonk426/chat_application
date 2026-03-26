@@ -25,10 +25,11 @@ class Customformfield extends StatelessWidget {
       onChanged: onChanged,
       controller: controller,
       decoration: InputDecoration(
+        border: InputBorder.none,
         errorText: errortext,
         suffixIcon: suffixImage,
         prefixIcon: prefix,
-        hint: Text(title.toString()),
+        hintText: title.toString(),
       ),
     );
   }

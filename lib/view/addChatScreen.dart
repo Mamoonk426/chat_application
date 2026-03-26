@@ -1,7 +1,7 @@
 import 'package:chat_application/components/customFormField.dart';
 import 'package:chat_application/components/userTile.dart';
 import 'package:chat_application/models/requestModel.dart';
-import 'package:chat_application/providers/chatProvider.dart';
+import 'package:chat_application/providers/addChatProvider.dart';
 import 'package:chat_application/view/userProfileScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +25,7 @@ class _AddchatscreenState extends State<Addchatscreen> {
     super.didChangeDependencies();
     if (!_isLoaded) {
       _isLoaded = true;
-      final chatProvider = Provider.of<Chatprovider>(context, listen: false);
+      final chatProvider = Provider.of<addChatprovider>(context, listen: false);
       chatProvider.getUser();
       chatProvider.listenSentRequests();
     }
@@ -33,7 +33,7 @@ class _AddchatscreenState extends State<Addchatscreen> {
 
   @override
   Widget build(BuildContext context) {
-    final chat = Provider.of<Chatprovider>(context);
+    final chat = Provider.of<addChatprovider>(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(

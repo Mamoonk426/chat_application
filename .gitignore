@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# FCM Backend
+lib/fcm-Backend/node_modules/
+lib/fcm-Backend/service-account.json

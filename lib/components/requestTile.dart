@@ -8,6 +8,8 @@ class Requesttile extends StatefulWidget {
   Function? cancelCall;
   Function? startChat;
   bool isAccepted;
+  bool isSentRequest;
+  String? statusLabel;
   Requesttile({
     super.key,
     this.leading,
@@ -17,6 +19,8 @@ class Requesttile extends StatefulWidget {
     this.confirmCall,
     this.isAccepted = false,
     this.startChat,
+    this.isSentRequest = false,
+    this.statusLabel,
   });
 
   @override
@@ -51,30 +55,71 @@ class _RequesttileState extends State<Requesttile> {
                   SizedBox(height: 4),
                   Text(
                     widget.trailing.toString(),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        ),
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 8),
-                  if (widget.isAccepted)
+                  if (widget.isSentRequest)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: widget.statusLabel == 'Accepted'
+                            ? Colors.green.withOpacity(0.15)
+                            : Colors.amber.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            widget.statusLabel == 'Accepted'
+                                ? Icons.check_circle_outline
+                                : Icons.schedule,
+                            size: 16,
+                            color: widget.statusLabel == 'Accepted'
+                                ? Colors.green
+                                : Colors.amber.shade700,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            widget.statusLabel ?? 'Pending',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              color: widget.statusLabel == 'Accepted'
+                                  ? Colors.green
+                                  : Colors.amber.shade700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else if (widget.isAccepted)
                     InkWell(
                       onTap: () => widget.startChat?.call(),
                       child: Container(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.15),
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.chat, color: Colors.green, size: 18),
-                            SizedBox(width: 6),
+                            Icon(Icons.chat, color: Theme.of(context).colorScheme.primary, size: 18),
+                            const SizedBox(width: 6),
                             Text(
                               'Start Chat',
                               style: TextStyle(
-                                color: Colors.green,
+                                color: Theme.of(context).colorScheme.primary,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
                               ),
@@ -92,28 +137,27 @@ class _RequesttileState extends State<Requesttile> {
                               widget.confirmCall!();
                             },
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 6,
                               ),
-                              minimumSize: Size(0, 35),
+                              minimumSize: const Size(0, 35),
                             ),
-                            child: Text('Confirm'),
+                            child: const Text('Confirm'),
                           ),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Expanded(
-                          child: ElevatedButton(
+                          child: OutlinedButton(
                             onPressed: () => widget.cancelCall?.call(),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey,
-                              padding: EdgeInsets.symmetric(
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 6,
                               ),
-                              minimumSize: Size(0, 35),
+                              minimumSize: const Size(0, 35),
                             ),
-                            child: Text('Cancel'),
+                            child: const Text('Cancel'),
                           ),
                         ),
                       ],
