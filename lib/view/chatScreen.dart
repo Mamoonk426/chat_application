@@ -324,13 +324,21 @@ class _ChatscreenState extends State<Chatscreen> {
                             shape: BoxShape.circle,
                           ),
                           child: Sendbutton(
-                            send: () async{
+                            send: () async {
                               if (message.text.trim().isEmpty) return;
                               chatProvider.startChat(
                                 widget.id,
                                 message.text.trim(),
                               );
-                            await  chatProvider.sendNotification(Chatservices().generateChatId(widget.id).toString(), message.text,widget.id ,Authservices().currentUser!.uid , Authservices().currentUser.) ;
+                              await chatProvider.sendNotification(
+                                Chatservices()
+                                    .generateChatId(widget.id)
+                                    .toString(),
+                                message.text,
+                                widget.id,
+                                Authservices().currentUser!.uid,
+                                Authservices().currentUser!.uid.toString(),
+                              );
                               message.clear();
                             },
                           ),

@@ -6,6 +6,7 @@ import 'package:chat_application/providers/loginProvider.dart';
 import 'package:chat_application/providers/registerProivder.dart';
 import 'package:chat_application/providers/requestProvider.dart';
 import 'package:chat_application/providers/themProvider.dart';
+import 'package:chat_application/providers/userProvider.dart';
 import 'package:chat_application/services/notificationServices.dart';
 import 'package:chat_application/view/homeScreen.dart';
 import 'package:chat_application/view/loginScreen.dart';
