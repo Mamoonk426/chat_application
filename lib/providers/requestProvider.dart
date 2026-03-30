@@ -7,6 +7,28 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Requestprovider with ChangeNotifier {
+  Requestprovider() {
+    _init();
+  }
+
+  void _init() {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        _recievedRequestsStream?.cancel();
+        _recievedRequestsNames?.cancel();
+        _sentRequestsStream?.cancel();
+        _sentRequestsNames?.cancel();
+        _friendsSubscription?.cancel();
+        _requests = [];
+        _sentRequests = [];
+        _friends = [];
+        _names = {};
+        _receiverNames = {};
+        notifyListeners();
+      }
+    });
+  }
+
   Future<void> acceptRequest(String docId, BuildContext context) async {
     await requestservices.acceptRequest(docId, context);
     Toasts.successToast('Requested Accepted', context);
@@ -139,5 +161,19 @@ class Requestprovider with ChangeNotifier {
     _sentRequestsNames?.cancel();
     _friendsSubscription?.cancel();
     super.dispose();
+  }
+
+  void clear() {
+    _recievedRequestsStream?.cancel();
+    _recievedRequestsNames?.cancel();
+    _sentRequestsStream?.cancel();
+    _sentRequestsNames?.cancel();
+    _friendsSubscription?.cancel();
+    _requests = [];
+    _sentRequests = [];
+    _friends = [];
+    _names = {};
+    _receiverNames = {};
+    notifyListeners();
   }
 }

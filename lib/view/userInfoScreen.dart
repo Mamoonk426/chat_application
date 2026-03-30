@@ -1,19 +1,18 @@
 import 'package:chat_application/models/userModel.dart';
 import 'package:chat_application/providers/addChatProvider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Userprofilescreen extends StatefulWidget {
+class Userinfoscreen extends StatefulWidget {
   Usermodel user;
-  Userprofilescreen({super.key, required this.user});
+  Userinfoscreen({super.key, required this.user});
 
   @override
-  State<Userprofilescreen> createState() => _UserprofilescreenState();
+  State<Userinfoscreen> createState() => _UserprofilescreenState();
 }
 
-class _UserprofilescreenState extends State<Userprofilescreen> {
+class _UserprofilescreenState extends State<Userinfoscreen> {
   @override
   Widget build(BuildContext context) {
     final chat = Provider.of<addChatprovider>(context);

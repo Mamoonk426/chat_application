@@ -35,12 +35,18 @@ class _RegisterscreenState extends State<Registerscreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 100),
+              const SizedBox(height: 60),
+              Image.asset(
+                'assets/Images/registration.jpg',
+                height: 200,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 20),
               Text(
                 'Register',
                 style: Theme.of(context).textTheme.headlineLarge,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Center(
                 child: Stack(
                   clipBehavior: Clip.none,

@@ -1,5 +1,6 @@
 import 'package:chat_application/providers/homeProvider.dart';
 import 'package:chat_application/view/chatListScreen.dart';
+import 'package:chat_application/view/profileDetails.dart';
 import 'package:chat_application/view/requestScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -13,6 +14,7 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
+  @override
   @override
   Widget build(BuildContext context) {
     final homeProvider = Provider.of<Homeprovider>(context);
@@ -43,14 +45,7 @@ class _HomescreenState extends State<Homescreen> {
           ),
         ],
       ),
-      body: IndexedStack(
-        index: homeProvider.currentIndex,
-        children: [
-          Chatlistscreen(),
-          Requestscreen(),
-          Center(child: Text('Profile')),
-        ],
-      ),
+      body: homeProvider.bodyBuild(homeProvider.currentIndex),
     );
   }
 }

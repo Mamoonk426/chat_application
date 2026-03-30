@@ -66,6 +66,19 @@ class addChatprovider with ChangeNotifier {
     super.dispose();
   }
 
+  void clear() {
+    _sentRequestsSubscription?.cancel();
+    _friendIdsSubscription?.cancel();
+    _sentRequestsSubscription = null;
+    _friendIdsSubscription = null;
+    _sentRequestReceiverIds = {};
+    _friendIds = {};
+    _emaildata = [];
+    _filtereddata = [];
+    _searchQuery = null;
+    notifyListeners();
+  }
+
   String extracting(String name) {
     List<String> splitName = name.split('');
     String? title;

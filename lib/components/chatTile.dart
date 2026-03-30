@@ -5,6 +5,7 @@ class ChatTile extends StatelessWidget {
   final String lastMessage;
   final DateTime lastMessageTime;
   final VoidCallback onTap;
+  final VoidCallback onLongPress;
 
   const ChatTile({
     super.key,
@@ -12,6 +13,7 @@ class ChatTile extends StatelessWidget {
     required this.lastMessage,
     required this.lastMessageTime,
     required this.onTap,
+    required this.onLongPress,
   });
 
   /// Extracts the first two letters from the name for the avatar.
@@ -43,8 +45,18 @@ class ChatTile extends StatelessWidget {
     if (diff == 1) return 'Yesterday';
 
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[time.month - 1]} ${time.day}';
   }
@@ -55,6 +67,7 @@ class ChatTile extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return InkWell(
+      onLongPress: onLongPress,
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(

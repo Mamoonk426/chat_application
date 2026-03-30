@@ -2,8 +2,8 @@ import 'package:chat_application/components/customFormField.dart';
 import 'package:chat_application/components/userTile.dart';
 import 'package:chat_application/models/requestModel.dart';
 import 'package:chat_application/providers/addChatProvider.dart';
-import 'package:chat_application/view/userProfileScreen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chat_application/view/userInfoScreen.dart';
+import 'package:chat_application/providers/userProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -89,7 +89,7 @@ class _AddchatscreenState extends State<Addchatscreen> {
                     final isFriend = chat.isFriendWith(user.id);
                     final hasSentRequest = chat.hasSentRequestTo(user.id);
                     if (user.id ==
-                        FirebaseAuth.instance.currentUser!.uid.toString()) {
+                        Provider.of<Userprovider>(context, listen: false).currentUser?.id) {
                       return SizedBox.shrink();
                     }
 
@@ -113,8 +113,7 @@ class _AddchatscreenState extends State<Addchatscreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  Userprofilescreen(user: user),
+                              builder: (context) => Userinfoscreen(user: user),
                             ),
                           );
                           return;

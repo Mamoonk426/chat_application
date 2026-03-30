@@ -2,12 +2,103 @@ import 'dart:async';
 
 import 'package:chat_application/models/chatModel.dart';
 import 'package:chat_application/models/messageModel.dart';
+import 'package:chat_application/services/authServices.dart';
 import 'package:chat_application/services/chatServices.dart';
 import 'package:chat_application/services/notificationServices.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class Chatprovider with ChangeNotifier {
+  final dbInstance = FirebaseFirestore.instance;
+  Chatservices chatservices = Chatservices();
+  Authservices authservices = Authservices();
+  Future<bool> deleteChat(String chatId) async {
+    return chatservices.deleteChat(chatId);
+  }
+
+  Map<String, dynamic>? status;
+  StreamSubscription? statusStream;
+
+  void listenToUserStatus(String otherUserid) {
+    statusStream?.cancel();
+    statusStream = authservices
+        .listenUserStatus(otherUserid)
+        .listen(
+          (statuses) {
+            status = statuses;
+            if (status != null) {
+              try {
+                // Added safe print, because if user node doesn't exist it would crash on !
+                print("USER STATUS  : ${status!['status']}");
+              } catch (e) {
+                print(e.toString());
+              }
+            }
+            notifyListeners();
+          },
+          onError: (error) {
+            print("Realtime DB Stream Error: $error");
+            status = null;
+            notifyListeners();
+          },
+        );
+  }
+
+  bool get isUserOnline {
+    if (status == null) return false;
+    // The Realtime DB node returns the user's fields directly.
+    return status!['status'] == 'Online';
+  }
+
+  Widget buildStatusIcon(String statusString) {
+    switch (statusString) {
+      case 'pending':
+        return Icon(Icons.schedule, size: 16, color: Colors.grey);
+      case 'sent':
+        return Icon(Icons.check, size: 14, color: Colors.grey);
+      case 'delivered':
+        return Icon(Icons.done_all, size: 14, color: Colors.grey);
+      case 'read':
+        return Icon(Icons.done_all, size: 14, color: Colors.blue);
+      case 'failed':
+        return Icon(Icons.error, size: 14, color: Colors.red);
+      default:
+        return SizedBox();
+    }
+  }
+
+  DocumentSnapshot? doc;
+  String? senderNames;
+  String? receiverToken;
+
+  Chatprovider() {
+    _init();
+  }
+
+  void _init() {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        _chatStream?.cancel();
+        _messageStream?.cancel();
+        chats = [];
+        _messages = [];
+        senderNames = null;
+        receiverToken = null;
+        notifyListeners();
+      }
+    });
+  }
+
+  Future<void> setCurrentandOtherUser() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    doc = await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+    Map data = doc!.data() as Map<String, dynamic>;
+    senderNames = data['name'];
+  }
+
   Messagingservices messagingservices = Messagingservices();
   List<ChatModel> chats = [];
   List<MessageModel> _messages = [];
@@ -18,28 +109,98 @@ class Chatprovider with ChangeNotifier {
   StreamSubscription<List<ChatModel>>? _chatStream;
   StreamSubscription<List<MessageModel>>? _messageStream;
 
-  Future<void> startChat(String receiverId, String message) async {
+  Future<void> startChat(String receiverId, String messageText) async {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    if (currentUserId == null) return;
+
+    final chatId = await _chatservices.generateChatId(receiverId);
+
+    // 1. Create temporary optimistic message
+    final optimisticMessage = MessageModel(
+      documentId: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+      senderId: currentUserId,
+      message: messageText,
+      sentAt: DateTime.now(),
+      status: 'pending',
+    );
+
+    _messages.insert(0, optimisticMessage);
+    notifyListeners();
+
     try {
-      await _chatservices.startChat(receiverId, message);
+      // Check if we already have this chat in our list to decide between startChat and sendMessage
+      bool chatExists = chats.any((c) => c.documentId == chatId);
+
+      String messageId;
+      if (chatExists) {
+        messageId = await _chatservices.sendMessage(
+          receiverId: receiverId,
+          message: messageText,
+        );
+      } else {
+        messageId = await _chatservices.startChat(receiverId, messageText);
+      }
+
+      // 2. Update status based on notification success
+      final notificationSent = await sendNotification(messageText, receiverId);
+      if (notificationSent) {
+        await _chatservices.updateMessageStatus(chatId, messageId, 'delivered');
+        print('Delivered BY FCM AND RAILWAY');
+      } else {
+        await _chatservices.updateMessageStatus(chatId, messageId, 'sent');
+      }
     } catch (e) {
-      debugPrint('Error starting chat: $e');
+      debugPrint("Error sending message: $e");
+      // Optionally handle failure status here
+    } finally {
+      // Remove optimistic message - the stream listener will bring in the real one
+      _messages.removeWhere(
+        (m) => m.documentId == optimisticMessage.documentId,
+      );
+      notifyListeners();
     }
   }
 
-  Future<void> sendNotification(
-    String chatId,
-    String message,
-    String senderName,
-    String receiverToken,
-    String receiverId,
-  ) async {
-    await messagingservices.sendNotification(
-      chatId: chatId,
-      receiverId: receiverId,
-      message: message,
-      senderName: senderName,
-      receiverToken: receiverToken,
-    );
+  Future<void> markAsRead(String receiverId) async {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    if (currentUserId == null) return;
+    final chatId = await _chatservices.generateChatId(receiverId);
+    await _chatservices.markMessagesAsRead(chatId, currentUserId);
+    print('MARKED AS READ CALLED');
+  }
+
+  Future<bool> sendNotification(String message, String receiverId) async {
+    try {
+      String senderName = senderNames ?? "New Message";
+      String chatId = await _chatservices.generateChatId(receiverId);
+
+      String? receiverToken;
+      final doc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(receiverId)
+          .get();
+      if (doc.exists) {
+        receiverToken = doc.data()?['token'];
+        print("Reciever Token: $receiverToken");
+      }
+
+      if (receiverToken == null || receiverToken.isEmpty) {
+        debugPrint("Receiver token not found");
+        return false;
+      }
+
+      final response = await messagingservices.sendNotification(
+        chatId: chatId,
+        receiverId: FirebaseAuth.instance.currentUser?.uid ?? '',
+        message: message,
+        senderName: senderName,
+        receiverToken: receiverToken,
+      );
+      return true;
+    } catch (e) {
+      debugPrint("Error sending notification: $e");
+      return false;
+    }
   }
 
   Future<void> chatListen() async {
@@ -80,6 +241,20 @@ class Chatprovider with ChangeNotifier {
             debugPrint(
               'Provider: ${_messages.length} messages synced for $chatId',
             );
+
+            // Auto mark as read if the current message is from the other user and not yet read
+            final hasUnread = _messages.any(
+              (m) =>
+                  m.senderId != FirebaseAuth.instance.currentUser?.uid &&
+                  m.status != 'read',
+            );
+            if (hasUnread) {
+              _chatservices.markMessagesAsRead(
+                chatId,
+                FirebaseAuth.instance.currentUser?.uid ?? '',
+              );
+            }
+
             notifyListeners();
           },
           onError: (error) {
@@ -88,10 +263,39 @@ class Chatprovider with ChangeNotifier {
         );
   }
 
+  void stopListeningToMessages() {
+    _messageStream?.cancel();
+    statusStream?.cancel();
+    statusStream = null;
+    _messageStream = null;
+    _messages = [];
+    statusStream?.cancel();
+    status = null;
+  }
+
   @override
   void dispose() {
     _chatStream?.cancel();
     _messageStream?.cancel();
     super.dispose();
   }
+
+  void clear() {
+    _chatStream?.cancel();
+    _messageStream?.cancel();
+    _chatStream = null;
+    _messageStream = null;
+    chats = [];
+    _messages = [];
+    senderNames = null;
+    receiverToken = null;
+    notifyListeners();
+  }
+}
+
+enum MessageStatus {
+  pending, // value 1
+  delivered, // value 2
+  failed, // value 3
+  read, // value 4
 }

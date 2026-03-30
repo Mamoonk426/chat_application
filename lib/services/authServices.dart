@@ -1,17 +1,21 @@
 import 'dart:math';
 import 'package:chat_application/components/Toasts.dart';
 import 'package:chat_application/models/userModel.dart';
+import 'package:chat_application/services/enumServices.dart';
 import 'package:chat_application/services/notificationServices.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class Authservices {
   static FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
+  FirebaseDatabase firebaseDatabase = FirebaseDatabase.instance;
   User? currentUser;
+  late final currentUserDoc;
 
   Future<void> storeUser(Usermodel userModel) async {
     await db.collection('Users').doc(userModel.id).set(userModel.toMap());
@@ -76,5 +80,58 @@ class Authservices {
       Toasts.errorToast(e.toString(), context);
       return false;
     }
+  }
+
+  Future<void> logout() async {
+    final user = firebaseAuth.currentUser;
+    if (user == null) return;
+    await firebaseDatabase.ref('presence/${user.uid}').set({
+      'status': 'Offline',
+    });
+    debugPrint('Setted OFFLINE');
+    await firebaseAuth.signOut();
+  }
+
+  Future<void> setUserStatus() async {
+    final user = firebaseAuth.currentUser;
+    if (user == null) return;
+
+    final connectedRef = firebaseDatabase.ref('.info/connected');
+
+    // Listen to network connection state
+    connectedRef.onValue.listen((event) async {
+      final isConnected = event.snapshot.value as bool? ?? false;
+
+      if (isConnected) {
+        final presenceRef = firebaseDatabase.ref('presence/${user.uid}');
+
+        try {
+          // 1. Queue the disconnect operation on the server FIRST
+          await presenceRef.onDisconnect().set({'status': 'Offline'});
+          print('OnDisconnect Called');
+
+          // 2. Safely tell the server we are Online
+          presenceRef.set({'status': 'Online'});
+
+          // 3. Keep Firestore roughly in sync
+          db
+              .collection('Users')
+              .doc(user.uid)
+              .update({'isOnline': true})
+              .catchError((_) {});
+        } catch (e) {
+          debugPrint("Status update error: $e");
+        }
+      }
+    });
+  }
+
+  Stream<Map<String, dynamic>?> listenUserStatus(String otherUserUid) {
+    final ref = FirebaseDatabase.instance.ref('presence/$otherUserUid');
+    return ref.onValue.map((event) {
+      final data = event.snapshot.value;
+      if (data == null) return null;
+      return Map<String, dynamic>.from(data as Map);
+    });
   }
 }

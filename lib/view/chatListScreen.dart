@@ -1,9 +1,10 @@
+import 'package:chat_application/components/Toasts.dart';
 import 'package:chat_application/components/chatTile.dart';
 import 'package:chat_application/components/customFormField.dart';
 import 'package:chat_application/providers/chatProvider.dart';
+import 'package:chat_application/providers/userProvider.dart';
 import 'package:chat_application/view/addChatScreen.dart';
 import 'package:chat_application/view/chatScreen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,13 +25,15 @@ class _ChatscreenState extends State<Chatlistscreen> {
     if (!_isLoaded) {
       final chat = Provider.of<Chatprovider>(context, listen: false);
       chat.chatListen();
+      Provider.of<Userprovider>(context, listen: false).setUserStatus();
       _isLoaded = true;
     }
   }
 
   /// Returns the display name of the other participant in the chat.
   String _otherUserName(Map<String, String> participantNames) {
-    final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final currentUid =
+        Provider.of<Userprovider>(context, listen: false).currentUser?.id ?? '';
     for (final entry in participantNames.entries) {
       if (entry.key != currentUid) return entry.value;
     }
@@ -39,11 +42,46 @@ class _ChatscreenState extends State<Chatlistscreen> {
 
   /// Returns the UID of the other participant.
   String _otherUserId(List<String> participants) {
-    final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final currentUid =
+        Provider.of<Userprovider>(context, listen: false).currentUser?.id ?? '';
     for (final uid in participants) {
       if (uid != currentUid) return uid;
     }
     return '';
+  }
+
+  /// Shows a confirmation dialog before deleting a chat.
+  Future<void> _showDeleteConfirmationDialog(
+    BuildContext context,
+    Chatprovider chatProvider,
+    String chatId,
+    String otherName,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Chat'),
+        content: Text(
+          'Are you sure you want to delete your chat with $otherName? This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final success = await chatProvider.deleteChat(chatId);
+      Toasts.successToast('Deleted Chat Successfully', context);
+    }
   }
 
   @override
@@ -79,7 +117,22 @@ class _ChatscreenState extends State<Chatlistscreen> {
               SizedBox(height: 10),
               Expanded(
                 child: chat.chats.isEmpty
-                    ? Center(child: Text('No Chat Found'))
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/Images/emptychatlist.jpg',
+                              height: 200,
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              'No Chats Found',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                          ],
+                        ),
+                      )
                     : ListView.builder(
                         padding: EdgeInsets.zero,
                         itemCount: chat.chats.length,
@@ -89,7 +142,16 @@ class _ChatscreenState extends State<Chatlistscreen> {
                             chatItem.participantNames,
                           );
                           final otherId = _otherUserId(chatItem.participants);
+
                           return ChatTile(
+                            onLongPress: () {
+                              _showDeleteConfirmationDialog(
+                                context,
+                                chat,
+                                chatItem.documentId,
+                                otherName,
+                              );
+                            },
                             receiverName: otherName,
                             lastMessage: chatItem.lastMessage,
                             lastMessageTime: chatItem.lastMessageTime,

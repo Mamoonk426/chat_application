@@ -5,14 +5,14 @@ class MessageModel {
   final String senderId;
   final String message;
   final DateTime sentAt;
-  final bool isRead;
+  final String status;
 
   MessageModel({
     required this.documentId,
     required this.senderId,
     required this.message,
     required this.sentAt,
-    required this.isRead,
+    required this.status,
   });
 
   // ✅ Firestore → MessageModel
@@ -23,7 +23,7 @@ class MessageModel {
       senderId: map['senderId'] ?? '',
       message: map['message'] ?? '',
       sentAt: (map['sentAt'] as Timestamp).toDate(),
-      isRead: map['isRead'] ?? false,
+      status: map['status'] ?? 'sent',
     );
   }
 
@@ -33,7 +33,7 @@ class MessageModel {
       'senderId': senderId,
       'message': message,
       'sentAt': Timestamp.fromDate(sentAt),
-      'isRead': isRead,
+      'status': status,
     };
   }
 
@@ -44,13 +44,14 @@ class MessageModel {
     String? message,
     DateTime? sentAt,
     bool? isRead,
+    String? status,
   }) {
     return MessageModel(
       documentId: documentId ?? this.documentId,
       senderId: senderId ?? this.senderId,
       message: message ?? this.message,
       sentAt: sentAt ?? this.sentAt,
-      isRead: isRead ?? this.isRead,
+      status: status ?? this.status,
     );
   }
 
@@ -60,7 +61,7 @@ class MessageModel {
         'documentId: $documentId, '
         'senderId: $senderId, '
         'message: $message, '
-        'sentAt: $sentAt, '
-        'isRead: $isRead)';
+        'sentAt: $sentAt , '
+        'status : $status';
   }
 }

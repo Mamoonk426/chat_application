@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 class Messagingservices {
   static const String _url =
-      'https://fcm-backend-production-e422.up.railway.app/send-notification ';
+      'https://fcm-backend-production-e422.up.railway.app/send-notification';
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -179,43 +179,40 @@ class Messagingservices {
     }
   }
 
-  Future<void> sendNotification({
+  Future<bool> sendNotification({
     required String chatId,
     required String receiverId,
     required String message,
     required String senderName,
     required String receiverToken,
   }) async {
-    try {
-      if (chatId.isEmpty &&
-          receiverId.isEmpty &&
-          senderName.isEmpty &&
-          message.isEmpty &&
-          receiverToken.isEmpty) {
-        return;
+    if (chatId.isEmpty &&
+        receiverId.isEmpty &&
+        senderName.isEmpty &&
+        message.isEmpty &&
+        receiverToken.isEmpty) {
+      return false;
+    } else {
+      final response = await http.post(
+        Uri.parse(_url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'token': receiverToken,
+          'title': senderName,
+          'body': message,
+          'data': {
+            'chatId': chatId,
+            'senderId': receiverId,
+            'type': 'chat_message',
+          },
+        }),
+      );
+      if (response.statusCode == 200) {
+        return true;
       } else {
-        final response = await http.post(
-          Uri.parse(_url),
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode({
-            'token': receiverToken,
-            'title': senderName,
-            'body': message,
-            'data': {
-              'chatId': chatId,
-              'senderId': receiverId,
-              'type': 'chat_message',
-            },
-          }),
-        );
-        if (response.statusCode == 200) {
-          print("Successfull");
-        } else {
-          debugPrint('Message Failed ${response.body}');
-        }
+        debugPrint('Message Failed ${response.body}');
+        return false;
       }
-    } catch (e) {
-      debugPrint(e.toString());
     }
   }
 }

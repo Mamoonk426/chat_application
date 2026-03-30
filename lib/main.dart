@@ -7,17 +7,30 @@ import 'package:chat_application/providers/registerProivder.dart';
 import 'package:chat_application/providers/requestProvider.dart';
 import 'package:chat_application/providers/themProvider.dart';
 import 'package:chat_application/providers/userProvider.dart';
+import 'package:chat_application/services/authServices.dart';
 import 'package:chat_application/services/notificationServices.dart';
 import 'package:chat_application/view/homeScreen.dart';
 import 'package:chat_application/view/loginScreen.dart';
 import 'package:chat_application/view/registerScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Robust Firebase initialization to handle rare sync issues
+  try {
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+  } catch (e) {
+    // If it's already initialized, we can safely ignore this error
+    debugPrint("Firebase initialization handled: $e");
+  }
+
   await Messagingservices().initialize();
   runApp(
     MultiProvider(
@@ -45,7 +58,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:chat_application/models/userModel.dart';
+import 'package:chat_application/services/authServices.dart';
+import 'package:chat_application/services/getUserServices.dart';
 import 'package:chat_application/services/notificationServices.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,6 +12,7 @@ class Userprovider extends ChangeNotifier {
   Usermodel? _currentUser;
   bool _isLoading = true;
   StreamSubscription<DocumentSnapshot>? _userSubscription;
+  Getuserservices getuserservices = Getuserservices();
 
   Usermodel? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
@@ -73,5 +76,22 @@ class Userprovider extends ChangeNotifier {
   void dispose() {
     _userSubscription?.cancel();
     super.dispose();
+  }
+
+  void clear() {
+    _userSubscription?.cancel();
+    _userSubscription = null;
+    _currentUser = null;
+    _isLoading = true;
+    notifyListeners();
+  }
+
+  Future<void> setUserStatus() async {
+    await Authservices().setUserStatus();
+  }
+
+  Future<void> logout() async {
+    await Authservices().logout();
+    clear();
   }
 }

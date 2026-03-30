@@ -1,9 +1,7 @@
 import 'package:chat_application/components/sendButton.dart';
 import 'package:chat_application/providers/chatProvider.dart';
-import 'package:chat_application/services/authServices.dart';
-import 'package:chat_application/services/chatServices.dart';
 import 'package:chat_application/themes/app_theme.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chat_application/providers/userProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,15 +18,26 @@ class _ChatscreenState extends State<Chatscreen> {
   bool _isInitialized = false;
   final TextEditingController message = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-
+  final bool _isOnline = false;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInitialized) {
       final chatProvider = Provider.of<Chatprovider>(context, listen: false);
       chatProvider.listenToMessages(widget.id);
+      chatProvider.setCurrentandOtherUser();
+      chatProvider.markAsRead(widget.id);
+      chatProvider.listenToUserStatus(widget.id);
       _isInitialized = true;
     }
+  }
+
+  @override
+  void dispose() {
+    message.dispose();
+    _scrollController.dispose();
+    Provider.of<Chatprovider>(context, listen: false).stopListeningToMessages();
+    super.dispose();
   }
 
   String _formatMessageTime(DateTime sentAt) {
@@ -43,7 +52,10 @@ class _ChatscreenState extends State<Chatscreen> {
     final chatTheme = Theme.of(context).extension<AppChatTheme>()!;
     final chatProvider = Provider.of<Chatprovider>(context);
     final colorScheme = Theme.of(context).colorScheme;
-    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final currentUserId = Provider.of<Userprovider>(
+      context,
+      listen: false,
+    ).currentUser?.id;
 
     return Scaffold(
       backgroundColor: chatTheme.chatBackground,
@@ -107,27 +119,47 @@ class _ChatscreenState extends State<Chatscreen> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 1),
-                      Row(
-                        children: [
-                          Container(
-                            width: 7,
-                            height: 7,
-                            decoration: const BoxDecoration(
-                              color: Colors.green,
-                              shape: BoxShape.circle,
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        transitionBuilder: (Widget child, Animation<double> animation) {
+                          return FadeTransition(opacity: animation, child: child);
+                        },
+                        child: Row(
+                          key: ValueKey<bool>(chatProvider.isUserOnline),
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: chatProvider.isUserOnline
+                                    ? Colors.green
+                                    : colorScheme.onSurface.withValues(alpha: 0.3),
+                                shape: BoxShape.circle,
+                                boxShadow: chatProvider.isUserOnline
+                                    ? [
+                                        BoxShadow(
+                                          color: Colors.green.withValues(alpha: 0.3),
+                                          blurRadius: 4,
+                                          spreadRadius: 1,
+                                        )
+                                      ]
+                                    : null,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Online',
-                            style: Theme.of(context).textTheme.labelSmall
-                                ?.copyWith(
-                                  color: colorScheme.onSurface.withValues(
-                                    alpha: 0.5,
+                            const SizedBox(width: 6),
+                            Text(
+                              chatProvider.isUserOnline ? 'Online' : 'Offline',
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: chatProvider.isUserOnline
+                                        ? Colors.green.shade700
+                                        : colorScheme.onSurface.withValues(alpha: 0.5),
+                                    fontWeight: chatProvider.isUserOnline
+                                        ? FontWeight.w500
+                                        : FontWeight.normal,
                                   ),
-                                ),
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -235,16 +267,30 @@ class _ChatscreenState extends State<Chatscreen> {
                                         ),
                                       ),
                                       const SizedBox(height: 4),
-                                      Text(
-                                        _formatMessageTime(msg.sentAt),
-                                        style: TextStyle(
-                                          color:
-                                              (isMe
-                                                      ? chatTheme.bubbleSentText
-                                                      : chatTheme
-                                                            .bubbleReceivedText)
-                                                  .withValues(alpha: 0.6),
-                                          fontSize: 10,
+                                      SizedBox(
+                                        width: 63,
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              _formatMessageTime(msg.sentAt),
+                                              style: TextStyle(
+                                                color:
+                                                    (isMe
+                                                            ? chatTheme
+                                                                  .bubbleSentText
+                                                            : chatTheme
+                                                                  .bubbleReceivedText)
+                                                        .withValues(alpha: 0.6),
+                                                fontSize: 10,
+                                              ),
+                                            ),
+                                            SizedBox(width: 5),
+                                            isMe
+                                                ? chatProvider.buildStatusIcon(
+                                                    msg.status.toString(),
+                                                  )
+                                                : SizedBox.shrink(),
+                                          ],
                                         ),
                                       ),
                                     ],
@@ -326,20 +372,14 @@ class _ChatscreenState extends State<Chatscreen> {
                           child: Sendbutton(
                             send: () async {
                               if (message.text.trim().isEmpty) return;
-                              chatProvider.startChat(
-                                widget.id,
-                                message.text.trim(),
-                              );
-                              await chatProvider.sendNotification(
-                                Chatservices()
-                                    .generateChatId(widget.id)
-                                    .toString(),
-                                message.text,
-                                widget.id,
-                                Authservices().currentUser!.uid,
-                                Authservices().currentUser!.uid.toString(),
-                              );
+
+                              String messageText = message.text.trim();
+
+                              // Clear immediately for optimistic experience
                               message.clear();
+
+                              // Provider handles the optimistic update and background Firestore write
+                              chatProvider.startChat(widget.id, messageText);
                             },
                           ),
                         ),
