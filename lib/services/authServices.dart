@@ -126,6 +126,28 @@ class Authservices {
     });
   }
 
+  Stream<bool> listenToType(String uid) {
+    final typeRef = FirebaseDatabase.instance.ref('presence/typestatus/$uid');
+    return typeRef.onValue.map((event) {
+      final data = event.snapshot.value;
+      if (data == null) return false;
+      final map = Map<String, dynamic>.from(data as Map);
+      return map['istyping'] == true;
+    });
+  }
+
+  Future<void> setToType(String uid, bool isTyping) async {
+    DatabaseReference typeRef = FirebaseDatabase.instance.ref(
+      'presence/typestatus/$uid',
+    );
+    if (isTyping) {
+      typeRef.set({'istyping': true});
+      typeRef.onDisconnect().remove();
+    } else {
+      typeRef.set({'istyping': false});
+    }
+  }
+
   Stream<Map<String, dynamic>?> listenUserStatus(String otherUserUid) {
     final ref = FirebaseDatabase.instance.ref('presence/$otherUserUid');
     return ref.onValue.map((event) {

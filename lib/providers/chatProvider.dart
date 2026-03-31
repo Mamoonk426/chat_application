@@ -14,8 +14,53 @@ class Chatprovider with ChangeNotifier {
   final dbInstance = FirebaseFirestore.instance;
   Chatservices chatservices = Chatservices();
   Authservices authservices = Authservices();
+  FocusNode focusNode = FocusNode();
+  bool _isTyping = false;
+  bool get isTyping => _isTyping;
+  String? _typingReceiverId;
+  StreamSubscription<bool>? listenToType;
+
   Future<bool> deleteChat(String chatId) async {
     return chatservices.deleteChat(chatId);
+  }
+
+  bool isTypingrecieve = false;
+  void listenToTyping(String uid) async {
+    listenToType = authservices.listenToType(uid).listen((value) {
+      isTypingrecieve = value;
+      notifyListeners();
+    });
+  }
+
+  void setTyping(String receiverId) {
+    _typingReceiverId = receiverId;
+  }
+
+  set isTyping(bool value) {
+    if (_isTyping == value) {
+      return;
+    } else {
+      _isTyping = value;
+      notifyListeners();
+      final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+      if (uid.isNotEmpty) {
+        // Update our own typing status under our UID
+        authservices.setToType(uid, isTyping);
+      }
+    }
+  }
+
+  void onFocusChange() {
+    if (!focusNode.hasFocus && _isTyping) {
+      isTyping = false; // use setter → triggers setToType in Firebase
+    }
+  }
+
+  void onTextChange(String text) {
+    final shouldBeTyping = text.trim().isNotEmpty;
+    if (_isTyping != shouldBeTyping) {
+      isTyping = shouldBeTyping; // use setter → triggers setToType in Firebase
+    }
   }
 
   Map<String, dynamic>? status;
@@ -266,15 +311,18 @@ class Chatprovider with ChangeNotifier {
   void stopListeningToMessages() {
     _messageStream?.cancel();
     statusStream?.cancel();
+    listenToType?.cancel();
     statusStream = null;
     _messageStream = null;
+    listenToType = null;
     _messages = [];
-    statusStream?.cancel();
     status = null;
+    isTypingrecieve = false;
   }
 
   @override
   void dispose() {
+    focusNode.dispose();
     _chatStream?.cancel();
     _messageStream?.cancel();
     super.dispose();

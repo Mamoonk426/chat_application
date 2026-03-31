@@ -1,4 +1,5 @@
 import 'package:chat_application/components/sendButton.dart';
+import 'package:chat_application/components/typingIndicator.dart';
 import 'package:chat_application/providers/chatProvider.dart';
 import 'package:chat_application/themes/app_theme.dart';
 import 'package:chat_application/providers/userProvider.dart';
@@ -18,7 +19,9 @@ class _ChatscreenState extends State<Chatscreen> {
   bool _isInitialized = false;
   final TextEditingController message = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final bool _isOnline = false;
+  bool isTyping = false;
+  late VoidCallback _onFocusChange;
+  late VoidCallback _onTextChange;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -28,15 +31,24 @@ class _ChatscreenState extends State<Chatscreen> {
       chatProvider.setCurrentandOtherUser();
       chatProvider.markAsRead(widget.id);
       chatProvider.listenToUserStatus(widget.id);
+      chatProvider.setTyping(widget.id);
+      _onFocusChange = chatProvider.onFocusChange;
+      _onTextChange = () => chatProvider.onTextChange(message.text);
+      chatProvider.focusNode.addListener(_onFocusChange);
+      message.addListener(_onTextChange);
+      chatProvider.listenToTyping(widget.id);
       _isInitialized = true;
     }
   }
 
   @override
   void dispose() {
+    final chatProvider = Provider.of<Chatprovider>(context, listen: false);
+    chatProvider.focusNode.removeListener(_onFocusChange);
+    message.removeListener(_onTextChange);
     message.dispose();
     _scrollController.dispose();
-    Provider.of<Chatprovider>(context, listen: false).stopListeningToMessages();
+    chatProvider.stopListeningToMessages();
     super.dispose();
   }
 
@@ -121,9 +133,13 @@ class _ChatscreenState extends State<Chatscreen> {
                       const SizedBox(height: 1),
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
-                        transitionBuilder: (Widget child, Animation<double> animation) {
-                          return FadeTransition(opacity: animation, child: child);
-                        },
+                        transitionBuilder:
+                            (Widget child, Animation<double> animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
                         child: Row(
                           key: ValueKey<bool>(chatProvider.isUserOnline),
                           children: [
@@ -133,15 +149,19 @@ class _ChatscreenState extends State<Chatscreen> {
                               decoration: BoxDecoration(
                                 color: chatProvider.isUserOnline
                                     ? Colors.green
-                                    : colorScheme.onSurface.withValues(alpha: 0.3),
+                                    : colorScheme.onSurface.withValues(
+                                        alpha: 0.3,
+                                      ),
                                 shape: BoxShape.circle,
                                 boxShadow: chatProvider.isUserOnline
                                     ? [
                                         BoxShadow(
-                                          color: Colors.green.withValues(alpha: 0.3),
+                                          color: Colors.green.withValues(
+                                            alpha: 0.3,
+                                          ),
                                           blurRadius: 4,
                                           spreadRadius: 1,
-                                        )
+                                        ),
                                       ]
                                     : null,
                               ),
@@ -149,10 +169,13 @@ class _ChatscreenState extends State<Chatscreen> {
                             const SizedBox(width: 6),
                             Text(
                               chatProvider.isUserOnline ? 'Online' : 'Offline',
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(
                                     color: chatProvider.isUserOnline
                                         ? Colors.green.shade700
-                                        : colorScheme.onSurface.withValues(alpha: 0.5),
+                                        : colorScheme.onSurface.withValues(
+                                            alpha: 0.5,
+                                          ),
                                     fontWeight: chatProvider.isUserOnline
                                         ? FontWeight.w500
                                         : FontWeight.normal,
@@ -300,6 +323,34 @@ class _ChatscreenState extends State<Chatscreen> {
                             },
                           ),
                   ),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    transitionBuilder: (child, animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position:
+                              Tween<Offset>(
+                                begin: const Offset(0, 0.3),
+                                end: Offset.zero,
+                              ).animate(
+                                CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.easeOut,
+                                ),
+                              ),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: chatProvider.isTypingrecieve
+                        ? const Align(
+                            key: ValueKey('typing'),
+                            alignment: Alignment.bottomLeft,
+                            child: Typingindicator(),
+                          )
+                        : const SizedBox.shrink(key: ValueKey('empty')),
+                  ),
 
                   // ── Input Bar ──
                   Padding(
@@ -334,17 +385,23 @@ class _ChatscreenState extends State<Chatscreen> {
                                   onPressed: () {},
                                 ),
                                 Expanded(
-                                  child: TextField(
-                                    controller: message,
-                                    minLines: 1,
-                                    maxLines: 5,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Type a message...',
-                                      border: InputBorder.none,
-                                      enabledBorder: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      contentPadding: EdgeInsets.symmetric(
-                                        vertical: 12,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadiusGeometry.circular(
+                                      15,
+                                    ),
+                                    child: TextField(
+                                      focusNode: chatProvider.focusNode,
+                                      controller: message,
+                                      minLines: 1,
+                                      maxLines: 5,
+                                      decoration: const InputDecoration(
+                                        hintText: '     Type a message...',
+                                        border: InputBorder.none,
+                                        enabledBorder: InputBorder.none,
+                                        focusedBorder: InputBorder.none,
+                                        contentPadding: EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
                                       ),
                                     ),
                                   ),

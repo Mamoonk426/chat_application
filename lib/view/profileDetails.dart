@@ -2,8 +2,10 @@ import 'package:chat_application/providers/addChatProvider.dart';
 import 'package:chat_application/providers/chatProvider.dart';
 import 'package:chat_application/providers/homeProvider.dart';
 import 'package:chat_application/providers/requestProvider.dart';
+import 'package:chat_application/providers/themProvider.dart';
 import 'package:chat_application/providers/userProvider.dart';
 import 'package:chat_application/view/loginScreen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -170,6 +172,7 @@ class _ProfiledetailsState extends State<Profiledetails> {
                 "Privacy policy and security settings",
                 onTap: () {},
               ),
+              _buildDarkModeTile(context),
             ]),
 
             const SizedBox(height: 16),
@@ -255,6 +258,26 @@ class _ProfiledetailsState extends State<Profiledetails> {
       trailing: onTap != null
           ? const Icon(Icons.chevron_right, size: 20)
           : null,
+    );
+  }
+
+  Widget _buildDarkModeTile(BuildContext context) {
+    final themeProv = context.watch<Themprovider>();
+    return ListTile(
+      leading: Icon(
+        themeProv.isDark ? Icons.dark_mode : Icons.light_mode,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+      title: const Text(
+        'Dark Mode',
+        style: TextStyle(fontWeight: FontWeight.w600),
+      ),
+      subtitle: Text(themeProv.isDark ? 'Dark theme enabled' : 'Light theme enabled'),
+      trailing: CupertinoSwitch(
+        value: themeProv.isDark,
+        activeTrackColor: Theme.of(context).colorScheme.primary,
+        onChanged: (_) => context.read<Themprovider>().settheme(),
+      ),
     );
   }
 }
