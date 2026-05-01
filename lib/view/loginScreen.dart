@@ -92,6 +92,7 @@ class _LoginscreenState extends State<Loginscreen> {
                 width: double.infinity,
                 height: 55,
                 child: Button(
+                  isLoading: authProvider.isLoading,
                   title: 'Login',
                   call: () async {
                     final login = await authProvider.login(

@@ -202,7 +202,9 @@ class _ProfiledetailsState extends State<Profiledetails> {
                 ),
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(
+              height: 120,
+            ), // Increased bottom spacing to prevent overlapping with the floating nav bar
           ],
         ),
       ),
@@ -272,7 +274,9 @@ class _ProfiledetailsState extends State<Profiledetails> {
         'Dark Mode',
         style: TextStyle(fontWeight: FontWeight.w600),
       ),
-      subtitle: Text(themeProv.isDark ? 'Dark theme enabled' : 'Light theme enabled'),
+      subtitle: Text(
+        themeProv.isDark ? 'Dark theme enabled' : 'Light theme enabled',
+      ),
       trailing: CupertinoSwitch(
         value: themeProv.isDark,
         activeTrackColor: Theme.of(context).colorScheme.primary,

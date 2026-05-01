@@ -14,6 +14,13 @@ class Registerproivder with ChangeNotifier {
   String? get passError => _passError;
   String? get nameError => _nameError;
 
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  void setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
   void checkmail(String email) {
     if (email.isEmpty) {
       _emailError = 'Please fill the field';
@@ -81,6 +88,22 @@ class Registerproivder with ChangeNotifier {
     String name,
     BuildContext context,
   ) async {
-    return await authservices.register(email, password, name, context);
+    try {
+      setLoading(true);
+      final register = await authservices.register(
+        email,
+        password,
+        name,
+        context,
+      );
+      setLoading(false);
+      return register;
+    } catch (e) {
+      setLoading(false);
+      print(e.toString());
+      return false;
+    } finally {
+      setLoading(false);
+    }
   }
 }

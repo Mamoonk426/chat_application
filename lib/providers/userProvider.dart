@@ -64,6 +64,7 @@ class Userprovider extends ChangeNotifier {
 
   Future<void> _checkAndUpdateToken(String uid) async {
     String? currentToken = await Messagingservices().getToken();
+    debugPrint("DEBUG TOKEN: currentToken=$currentToken, currentUserToken=${_currentUser?.token}");
     if (currentToken != null && _currentUser?.token != currentToken) {
       FirebaseFirestore.instance.collection('Users').doc(uid).update({
         'token': currentToken,

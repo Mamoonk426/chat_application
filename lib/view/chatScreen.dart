@@ -22,33 +22,34 @@ class _ChatscreenState extends State<Chatscreen> {
   bool isTyping = false;
   late VoidCallback _onFocusChange;
   late VoidCallback _onTextChange;
+  late Chatprovider _chatProvider;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInitialized) {
-      final chatProvider = Provider.of<Chatprovider>(context, listen: false);
-      chatProvider.listenToMessages(widget.id);
-      chatProvider.setCurrentandOtherUser();
-      chatProvider.markAsRead(widget.id);
-      chatProvider.listenToUserStatus(widget.id);
-      chatProvider.setTyping(widget.id);
-      _onFocusChange = chatProvider.onFocusChange;
-      _onTextChange = () => chatProvider.onTextChange(message.text);
-      chatProvider.focusNode.addListener(_onFocusChange);
+      _chatProvider = Provider.of<Chatprovider>(context, listen: false);
+      _chatProvider.listenToMessages(widget.id);
+      _chatProvider.setCurrentandOtherUser();
+      _chatProvider.markAsRead(widget.id);
+      _chatProvider.listenToUserStatus(widget.id);
+      _chatProvider.setTyping(widget.id);
+      _onFocusChange = _chatProvider.onFocusChange;
+      _onTextChange = () => _chatProvider.onTextChange(message.text);
+      _chatProvider.focusNode.addListener(_onFocusChange);
       message.addListener(_onTextChange);
-      chatProvider.listenToTyping(widget.id);
+      _chatProvider.listenToTyping(widget.id);
       _isInitialized = true;
     }
   }
 
   @override
   void dispose() {
-    final chatProvider = Provider.of<Chatprovider>(context, listen: false);
-    chatProvider.focusNode.removeListener(_onFocusChange);
+    _chatProvider.focusNode.removeListener(_onFocusChange);
     message.removeListener(_onTextChange);
     message.dispose();
     _scrollController.dispose();
-    chatProvider.stopListeningToMessages();
+    _chatProvider.stopListeningToMessages();
     super.dispose();
   }
 
@@ -103,7 +104,9 @@ class _ChatscreenState extends State<Chatscreen> {
                     size: 20,
                     color: colorScheme.onSurface,
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    if (mounted) Navigator.pop(context);
+                  },
                 ),
                 CircleAvatar(
                   radius: 20,
@@ -254,26 +257,43 @@ class _ChatscreenState extends State<Chatscreen> {
                                     vertical: 10,
                                   ),
                                   decoration: BoxDecoration(
+                                    gradient: isMe
+                                        ? LinearGradient(
+                                            colors: [
+                                              colorScheme.primary,
+                                              colorScheme.primary.withValues(
+                                                alpha: 0.7,
+                                              ),
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          )
+                                        : null,
                                     color: isMe
-                                        ? chatTheme.bubbleSent
+                                        ? null
                                         : chatTheme.bubbleReceived,
                                     borderRadius: BorderRadius.only(
-                                      topLeft: const Radius.circular(16),
-                                      topRight: const Radius.circular(16),
+                                      topLeft: const Radius.circular(20),
+                                      topRight: const Radius.circular(20),
                                       bottomLeft: isMe
-                                          ? const Radius.circular(16)
-                                          : Radius.zero,
+                                          ? const Radius.circular(20)
+                                          : const Radius.circular(4),
                                       bottomRight: isMe
-                                          ? Radius.zero
-                                          : const Radius.circular(16),
+                                          ? const Radius.circular(4)
+                                          : const Radius.circular(20),
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: colorScheme.shadow.withValues(
-                                          alpha: 0.05,
-                                        ),
-                                        blurRadius: 5,
-                                        offset: const Offset(0, 2),
+                                        color: isMe
+                                            ? colorScheme.primary.withValues(
+                                                alpha: 0.25,
+                                              )
+                                            : colorScheme.shadow.withValues(
+                                                alpha: 0.05,
+                                              ),
+                                        blurRadius: 8,
+                                        spreadRadius: 1,
+                                        offset: const Offset(0, 3),
                                       ),
                                     ],
                                   ),
@@ -431,10 +451,8 @@ class _ChatscreenState extends State<Chatscreen> {
                               if (message.text.trim().isEmpty) return;
 
                               String messageText = message.text.trim();
-
                               // Clear immediately for optimistic experience
                               message.clear();
-
                               // Provider handles the optimistic update and background Firestore write
                               chatProvider.startChat(widget.id, messageText);
                             },

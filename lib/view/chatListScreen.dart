@@ -89,23 +89,42 @@ class _ChatscreenState extends State<Chatlistscreen> {
     final chat = Provider.of<Chatprovider>(context);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Addchatscreen()),
-          );
-        },
-        child: Icon(Icons.add),
-      ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.only(left: 10, right: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Chats', style: Theme.of(context).textTheme.headlineLarge),
-              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.only(top: 20, bottom: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Messages',
+                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                          ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.edit_square, color: Theme.of(context).colorScheme.primary),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const Addchatscreen()),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               Customformfield(
                 suffixImage: IconButton(
                   onPressed: () async {},
@@ -134,7 +153,7 @@ class _ChatscreenState extends State<Chatlistscreen> {
                         ),
                       )
                     : ListView.builder(
-                        padding: EdgeInsets.zero,
+                        padding: const EdgeInsets.only(bottom: 100),
                         itemCount: chat.chats.length,
                         itemBuilder: (context, index) {
                           final chatItem = chat.chats[index];

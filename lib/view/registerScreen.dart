@@ -153,6 +153,7 @@ class _RegisterscreenState extends State<Registerscreen> {
                 height: 55,
                 child: Button(
                   title: 'Register',
+                  isLoading: registerProvider.isLoading,
                   call: () async {
                     final register = await registerProvider.registerUser(
                       email.text,

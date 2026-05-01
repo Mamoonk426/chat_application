@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:chat_application/Cache/failed_message_model.dart';
 import 'package:chat_application/models/chatModel.dart';
 import 'package:chat_application/models/messageModel.dart';
 import 'package:chat_application/services/authServices.dart';
+import 'package:chat_application/services/cacheservices.dart';
 import 'package:chat_application/services/chatServices.dart';
 import 'package:chat_application/services/notificationServices.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,6 +16,7 @@ class Chatprovider with ChangeNotifier {
   final dbInstance = FirebaseFirestore.instance;
   Chatservices chatservices = Chatservices();
   Authservices authservices = Authservices();
+  Cacheservices cacheservices = Cacheservices();
   FocusNode focusNode = FocusNode();
   bool _isTyping = false;
   bool get isTyping => _isTyping;
@@ -178,12 +181,39 @@ class Chatprovider with ChangeNotifier {
 
       String messageId;
       if (chatExists) {
-        messageId = await _chatservices.sendMessage(
-          receiverId: receiverId,
-          message: messageText,
-        );
+        messageId = await _chatservices
+            .sendMessage(receiverId: receiverId, message: messageText)
+            .timeout(
+              Duration(seconds: 10),
+              onTimeout: () {
+                cacheservices.cacheFailedMessages(
+                  chatRoomid: optimisticMessage.documentId,
+                  message: HiveFailedMessageModel.fromMessageModel(
+                    message: optimisticMessage,
+                    chatRoomId: chatId,
+                    receiverId: receiverId,
+                  ),
+                );
+                throw TimeoutException('Failed To Send Message ');
+              },
+            );
       } else {
-        messageId = await _chatservices.startChat(receiverId, messageText);
+        messageId = await _chatservices
+            .startChat(receiverId, messageText)
+            .timeout(
+              Duration(seconds: 10),
+              onTimeout: () {
+                cacheservices.cacheFailedMessages(
+                  chatRoomid: chatId,
+                  message: HiveFailedMessageModel.fromMessageModel(
+                    message: optimisticMessage,
+                    chatRoomId: chatId,
+                    receiverId: receiverId,
+                  ),
+                );
+                throw TimeoutException('Failed to Send Message');
+              },
+            );
       }
 
       // 2. Update status based on notification success

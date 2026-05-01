@@ -1,3 +1,6 @@
+import 'package:chat_application/Cache/chat_model.dart';
+import 'package:chat_application/Cache/failed_message_model.dart';
+import 'package:chat_application/Cache/message_model.dart';
 import 'package:chat_application/firebase_options.dart';
 import 'package:chat_application/providers/addChatProvider.dart';
 import 'package:chat_application/providers/chatProvider.dart';
@@ -15,10 +18,15 @@ import 'package:chat_application/view/registerScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(HiveFailedMessageModelAdapter());
+  Hive.registerAdapter(HiveMessageModelAdapter());
+  Hive.registerAdapter(HiveChatModelAdapter());
   // Robust Firebase initialization to handle rare sync issues
   try {
     if (Firebase.apps.isEmpty) {
@@ -35,7 +43,6 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => Homeprovider()),
         ChangeNotifierProvider(create: (_) => Themprovider()),
         ChangeNotifierProvider(create: (_) => Registerproivder()),
         ChangeNotifierProvider(create: (_) => Loginprovider()),
@@ -43,6 +50,11 @@ void main() async {
         ChangeNotifierProvider(create: (_) => Requestprovider()),
         ChangeNotifierProvider(create: (_) => Chatprovider()),
         ChangeNotifierProvider(create: (_) => Userprovider()),
+        ChangeNotifierProxyProvider<Chatprovider, Homeprovider>(
+          create: (_) => Homeprovider(chatProvider: Chatprovider()),
+          update: (context, chatProvider, previous) =>
+              previous ?? Homeprovider(chatProvider: chatProvider),
+        ),
       ],
 
       child: MyApp(),
