@@ -102,22 +102,30 @@ class _ChatscreenState extends State<Chatlistscreen> {
                   children: [
                     Text(
                       'Messages',
-                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                      style: Theme.of(context).textTheme.headlineLarge
+                          ?.copyWith(
                             fontWeight: FontWeight.w800,
                             letterSpacing: -0.5,
                           ),
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon: Icon(Icons.edit_square, color: Theme.of(context).colorScheme.primary),
+                        icon: Icon(
+                          Icons.edit_square,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const Addchatscreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const Addchatscreen(),
+                            ),
                           );
                         },
                       ),
@@ -135,7 +143,9 @@ class _ChatscreenState extends State<Chatlistscreen> {
               ),
               SizedBox(height: 10),
               Expanded(
-                child: chat.chats.isEmpty
+                child: chat.ischatloading
+                    ? Center(child: CircularProgressIndicator())
+                    : chat.chats.isEmpty
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

@@ -112,6 +112,19 @@ class _RegisterscreenState extends State<Registerscreen> {
                       ),
                       SizedBox(height: 10),
                       Customformfield(
+                        isObscure: registerProvider.ispasswordVisible,
+                        suffixImage: IconButton(
+                          onPressed: () {
+                            registerProvider.setPasswordVisibility(
+                              !registerProvider.ispasswordVisible,
+                            );
+                          },
+                          icon: Icon(
+                            registerProvider.ispasswordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                        ),
                         errortext: registerProvider.passError,
                         onChanged: (value) {
                           registerProvider.checkpass(value.toString());

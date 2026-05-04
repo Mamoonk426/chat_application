@@ -6,6 +6,7 @@ class Customformfield extends StatelessWidget {
   Icon? suffix;
   IconButton? suffixImage;
   String? errortext;
+  bool? isObscure;
   Function(String? value)? onChanged;
   TextEditingController controller;
   Customformfield({
@@ -17,11 +18,13 @@ class Customformfield extends StatelessWidget {
     this.suffix,
     required this.controller,
     this.errortext,
+    this.isObscure,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      obscureText: isObscure ?? false,
       onChanged: onChanged,
       controller: controller,
       decoration: InputDecoration(

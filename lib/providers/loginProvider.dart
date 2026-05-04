@@ -4,6 +4,13 @@ import 'package:flutter/material.dart';
 class Loginprovider with ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  bool _ispasswordVisible = false;
+  bool get ispasswordVisible => _ispasswordVisible;
+  void setPasswordVisibility(bool value) {
+    _ispasswordVisible = value;
+    notifyListeners();
+  }
+
   Authservices authservices = Authservices();
   set isLoading(bool value) {
     _isLoading = value;

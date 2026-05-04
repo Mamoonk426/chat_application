@@ -53,8 +53,8 @@ class _RequestscreenState extends State<Requestscreen> {
               Text(
                 'Social',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -143,9 +143,11 @@ class _RequestscreenState extends State<Requestscreen> {
                 itemCount: data.length,
                 itemBuilder: (context, index) {
                   final item = data[index];
-                  final otherId =
-                      request.isSentSelected ? item.receiverId : item.senderId;
-                  final displayName = request.currentNamesMap[otherId] ??
+                  final otherId = request.isSentSelected
+                      ? item.receiverId
+                      : item.senderId;
+                  final displayName =
+                      request.currentNamesMap[otherId] ??
                       (request.isSentSelected
                           ? item.receiverName
                           : item.senderName);
@@ -158,10 +160,8 @@ class _RequestscreenState extends State<Requestscreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => Chatscreen(
-                            id: otherId,
-                            name: displayName,
-                          ),
+                          builder: (context) =>
+                              Chatscreen(id: otherId, name: displayName),
                         ),
                       );
                     },
@@ -208,10 +208,8 @@ class _RequestscreenState extends State<Requestscreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => Chatscreen(
-                  id: friendId,
-                  name: friendName,
-                ),
+                builder: (context) =>
+                    Chatscreen(id: friendId, name: friendName),
               ),
             );
           },
@@ -234,21 +232,12 @@ class _RequestscreenState extends State<Requestscreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            'assets/Images/emptyrequestlist.png',
-            height: 200,
-            errorBuilder: (context, error, stackTrace) => Icon(
-              icon,
-              size: 64,
-              color: colorScheme.onSurface.withValues(alpha: 0.1),
-            ),
-          ),
           const SizedBox(height: 16),
           Text(
             label,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: colorScheme.onSurface.withValues(alpha: 0.4),
-                ),
+              color: colorScheme.onSurface.withValues(alpha: 0.4),
+            ),
           ),
         ],
       ),

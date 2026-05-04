@@ -56,6 +56,20 @@ class _LoginscreenState extends State<Loginscreen> {
                       ),
                       SizedBox(height: 10),
                       Customformfield(
+                        isObscure: authProvider.ispasswordVisible,
+
+                        suffixImage: IconButton(
+                          onPressed: () {
+                            authProvider.setPasswordVisibility(
+                              !authProvider.ispasswordVisible,
+                            );
+                          },
+                          icon: Icon(
+                            authProvider.ispasswordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                        ),
                         controller: password,
                         title: 'password',
                         prefix: Icon(Icons.password),

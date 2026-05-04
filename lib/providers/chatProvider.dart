@@ -23,6 +23,8 @@ class Chatprovider with ChangeNotifier {
   bool get isTyping => _isTyping;
   bool _isloading = false;
   bool get isloading => _isloading;
+  bool _ischatloading = false;
+  bool get ischatloading => _ischatloading;
 
   String? _typingReceiverId;
   StreamSubscription<bool>? listenToType;
@@ -285,9 +287,9 @@ class Chatprovider with ChangeNotifier {
   Future<void> chatListen() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
-
     await _chatStream?.cancel();
-
+    _ischatloading = true;
+    notifyListeners();
     _chatStream = _chatservices
         .getChat(uid)
         .listen(
@@ -297,14 +299,13 @@ class Chatprovider with ChangeNotifier {
             chats.sort(
               (a, b) => b.lastMessageTime.compareTo(a.lastMessageTime),
             );
-            for (var c in chats) {
-              debugPrint('Chat: ${c.lastMessage} | Time: ${c.lastMessageTime}');
-            }
-
+            _ischatloading = false;
             notifyListeners();
           },
           onError: (error) {
             debugPrint('Provider: Error loading chats: $error');
+            _ischatloading = false;
+            notifyListeners();
           },
         );
   }

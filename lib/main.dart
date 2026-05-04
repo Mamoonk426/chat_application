@@ -15,6 +15,7 @@ import 'package:chat_application/services/notificationServices.dart';
 import 'package:chat_application/view/homeScreen.dart';
 import 'package:chat_application/view/loginScreen.dart';
 import 'package:chat_application/view/registerScreen.dart';
+import 'package:chat_application/view/splashScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +75,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Loginscreen(),
+      home: Splashscreen(),
       debugShowCheckedModeBanner: false,
       theme: Provider.of<Themprovider>(context).themeData,
     );

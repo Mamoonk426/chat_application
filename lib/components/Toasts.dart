@@ -30,7 +30,7 @@ class Toasts {
           backgroundColor: Colors.transparent,
           elevation: 0,
           content: AwesomeSnackbarContent(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).colorScheme.primary,
             title: 'Success',
             message: message,
             contentType: ContentType.success,
