@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chat_application/Cache/failed_message_model.dart';
+import 'package:chat_application/Cache/message_model.dart';
 import 'package:chat_application/models/chatModel.dart';
 import 'package:chat_application/models/messageModel.dart';
 import 'package:chat_application/services/authServices.dart';
@@ -20,6 +21,9 @@ class Chatprovider with ChangeNotifier {
   FocusNode focusNode = FocusNode();
   bool _isTyping = false;
   bool get isTyping => _isTyping;
+  bool _isloading = false;
+  bool get isloading => _isloading;
+
   String? _typingReceiverId;
   StreamSubscription<bool>? listenToType;
 
@@ -187,7 +191,7 @@ class Chatprovider with ChangeNotifier {
               Duration(seconds: 10),
               onTimeout: () {
                 cacheservices.cacheFailedMessages(
-                  chatRoomid: optimisticMessage.documentId,
+                  chatRoomid: chatId,
                   message: HiveFailedMessageModel.fromMessageModel(
                     message: optimisticMessage,
                     chatRoomId: chatId,
@@ -283,6 +287,7 @@ class Chatprovider with ChangeNotifier {
     if (uid == null) return;
 
     await _chatStream?.cancel();
+
     _chatStream = _chatservices
         .getChat(uid)
         .listen(
@@ -307,15 +312,48 @@ class Chatprovider with ChangeNotifier {
   Future<void> listenToMessages(String receiverId) async {
     final chatId = await _chatservices.generateChatId(receiverId);
     await _messageStream?.cancel();
+    _isloading = true;
     _messages = []; // Clear current messages when switching chats
+    notifyListeners();
+    final cachemessages = await cacheservices.getmessages(chatId);
+    if (cachemessages.isNotEmpty) {
+      _messages = cachemessages
+          .map(
+            (m) => MessageModel(
+              documentId: m.id,
+              senderId: m.senderId,
+              message: m.text,
+              sentAt: m.timestamp,
+              status: m.status,
+            ),
+          )
+          .toList();
+      debugPrint(
+        'Loaded ${_messages.length} messages from cache for chat $chatId',
+      );
+      _isloading = false;
+      notifyListeners();
+    }
+
     _messageStream = _chatservices
         .getMessages(chatId)
         .listen(
           (newMessages) {
             _messages = newMessages;
+            final cachedIds = _messages.map((m) => m.documentId).toSet();
+            for (final msg in newMessages) {
+              if (!cachedIds.contains(msg.documentId)) {
+                cacheservices.cacheMessages(
+                  chatId,
+                  HiveMessageModel.fromchat(msg),
+                );
+              }
+            }
+
             debugPrint(
               'Provider: ${_messages.length} messages synced for $chatId',
             );
+            _isloading = false;
 
             // Auto mark as read if the current message is from the other user and not yet read
             final hasUnread = _messages.any(

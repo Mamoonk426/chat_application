@@ -82,4 +82,11 @@ class Homeprovider with ChangeNotifier {
     connectivityStream?.cancel();
     _isDisposed = true;
   }
+
+  void updatechat(Chatprovider chatProvider) {
+    // This method will be called when the Chatprovider updates
+    // You can perform any necessary updates here based on the new Chatprovider state
+    print("Chatprovider updated in Homeprovider");
+    notifyListeners(); // Notify listeners to rebuild UI if needed
+  }
 }

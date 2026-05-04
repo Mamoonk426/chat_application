@@ -40,7 +40,7 @@ class Cacheservices {
     HiveMessageModel messages,
   ) async {
     final box = await _msgbox(chatRoomid);
-    await box.put(messages.id, messages);
+    await box.putAll({messages.id: messages});
   }
 
   Future<List<HiveChatModel>> getAllchats() async {

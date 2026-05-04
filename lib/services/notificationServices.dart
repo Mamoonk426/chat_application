@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 class Messagingservices {
   static const String _url =
-      'https://fcm-backend-production-e422.up.railway.app/send-notification';
+      'https://fcm-backend-production-d47e.up.railway.app/send-notification';
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();

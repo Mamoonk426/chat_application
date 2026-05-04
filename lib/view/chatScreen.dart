@@ -218,7 +218,9 @@ class _ChatscreenState extends State<Chatscreen> {
                 children: [
                   // ── Messages List ──
                   Expanded(
-                    child: chatProvider.messages.isEmpty
+                    child: chatProvider.isloading
+                        ? Center(child: CircularProgressIndicator())
+                        : chatProvider.messages.isEmpty
                         ? Center(
                             child: Text(
                               'No messages yet',

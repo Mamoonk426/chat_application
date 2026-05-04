@@ -51,9 +51,10 @@ void main() async {
         ChangeNotifierProvider(create: (_) => Chatprovider()),
         ChangeNotifierProvider(create: (_) => Userprovider()),
         ChangeNotifierProxyProvider<Chatprovider, Homeprovider>(
-          create: (_) => Homeprovider(chatProvider: Chatprovider()),
-          update: (context, chatProvider, previous) =>
-              previous ?? Homeprovider(chatProvider: chatProvider),
+          create: (context) => Homeprovider(chatProvider: Chatprovider()),
+          update: (context, chatProvider, homeProvider) {
+            return homeProvider!..updatechat(chatProvider);
+          },
         ),
       ],
 
