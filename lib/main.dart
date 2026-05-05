@@ -10,14 +10,9 @@ import 'package:chat_application/providers/registerProivder.dart';
 import 'package:chat_application/providers/requestProvider.dart';
 import 'package:chat_application/providers/themProvider.dart';
 import 'package:chat_application/providers/userProvider.dart';
-import 'package:chat_application/services/authServices.dart';
 import 'package:chat_application/services/notificationServices.dart';
-import 'package:chat_application/view/homeScreen.dart';
-import 'package:chat_application/view/loginScreen.dart';
-import 'package:chat_application/view/registerScreen.dart';
 import 'package:chat_application/view/splashScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +23,7 @@ void main() async {
   Hive.registerAdapter(HiveFailedMessageModelAdapter());
   Hive.registerAdapter(HiveMessageModelAdapter());
   Hive.registerAdapter(HiveChatModelAdapter());
+
   // Robust Firebase initialization to handle rare sync issues
   try {
     if (Firebase.apps.isEmpty) {

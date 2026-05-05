@@ -1,14 +1,10 @@
-import 'dart:math';
 import 'package:chat_application/components/Toasts.dart';
 import 'package:chat_application/models/userModel.dart';
-import 'package:chat_application/services/enumServices.dart';
 import 'package:chat_application/services/notificationServices.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class Authservices {
   static FirebaseAuth firebaseAuth = FirebaseAuth.instance;

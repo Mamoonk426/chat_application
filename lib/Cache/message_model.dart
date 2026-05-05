@@ -22,7 +22,6 @@ class HiveMessageModel extends HiveObject {
     required this.timestamp,
     required this.status,
   });
-  HiveMessageModel _messagetohive(HiveMessageModel m) => m;
   factory HiveMessageModel.fromchat(MessageModel message) {
     return HiveMessageModel(
       id: message.documentId,

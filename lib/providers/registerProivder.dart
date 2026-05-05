@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:chat_application/services/authServices.dart';
-import 'package:chat_application/services/picUploadingServices.dart';
 import 'package:flutter/material.dart';
 
 class Registerproivder with ChangeNotifier {

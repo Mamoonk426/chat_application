@@ -1,9 +1,6 @@
 import 'package:chat_application/providers/homeProvider.dart';
-import 'package:chat_application/view/chatListScreen.dart';
-import 'package:chat_application/view/profileDetails.dart';
-import 'package:chat_application/view/requestScreen.dart';
+import 'package:chat_application/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'dart:ui';
 
@@ -32,43 +29,43 @@ class _HomescreenState extends State<Homescreen> {
     final homeProvider = Provider.of<Homeprovider>(context);
     print('B U I L D E D ');
     return Scaffold(
+      extendBody: true,
       bottomNavigationBar: Container(
-        height: 83,
-        margin: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+        height: 85,
+        margin: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
         decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.65),
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1.5),
+          color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(35),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+            width: 1.5,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 20,
-              spreadRadius: 5,
-              offset: const Offset(0, 5),
+              color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
+              blurRadius: 25,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(35),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+            filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
             child: BottomNavigationBar(
               elevation: 0,
               backgroundColor: Colors.transparent,
               currentIndex: homeProvider.currentIndex,
               showSelectedLabels: true,
-              showUnselectedLabels: true,
-              unselectedLabelStyle: TextStyle(
-                color: Theme.of(
-                  context,
-                ).textTheme.bodyMedium!.color!.withOpacity(0.5),
-              ),
-              selectedItemColor: Theme.of(context).colorScheme.inversePrimary,
-              unselectedItemColor: Colors.grey.shade500,
-              type: BottomNavigationBarType.shifting,
-              selectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
+              showUnselectedLabels: false,
+              selectedItemColor: Theme.of(context).colorScheme.primary,
+              unselectedItemColor: Theme.of(
+                context,
+              ).colorScheme.onSurface.withOpacity(0.4),
+              type: BottomNavigationBarType.fixed,
+              selectedLabelStyle: AppTextStyles.labelSmall.copyWith(
+                fontWeight: FontWeight.w700,
+                color: Theme.of(context).colorScheme.primary,
               ),
               onTap: (value) {
                 homeProvider.setIndex(value);
@@ -76,44 +73,24 @@ class _HomescreenState extends State<Homescreen> {
               items: const [
                 BottomNavigationBarItem(
                   label: 'Chats',
-                  icon: ImageIcon(
-                    AssetImage('assets/icons/Chaticon.png'),
-                    size: 22,
-                  ),
-
-                  activeIcon: ImageIcon(
-                    AssetImage('assets/icons/Chaticon.png'),
-                    size: 26,
-                  ),
+                  icon: Icon(Icons.chat_bubble_outline_rounded, size: 24),
+                  activeIcon: Icon(Icons.chat_bubble_rounded, size: 28),
                 ),
                 BottomNavigationBarItem(
                   label: 'Requests',
-                  icon: ImageIcon(
-                    AssetImage('assets/icons/Groupicon.png'),
-                    size: 22,
-                  ),
-                  activeIcon: ImageIcon(
-                    AssetImage('assets/icons/Groupicon.png'),
-                    size: 26,
-                  ),
+                  icon: Icon(Icons.people_outline_rounded, size: 24),
+                  activeIcon: Icon(Icons.people_rounded, size: 28),
                 ),
                 BottomNavigationBarItem(
                   label: 'Profile',
-                  icon: ImageIcon(
-                    AssetImage('assets/icons/Profileicon.png'),
-                    size: 22,
-                  ),
-                  activeIcon: ImageIcon(
-                    AssetImage('assets/icons/Profileicon.png'),
-                    size: 26,
-                  ),
+                  icon: Icon(Icons.person_outline_rounded, size: 24),
+                  activeIcon: Icon(Icons.person_rounded, size: 28),
                 ),
               ],
             ),
           ),
         ),
       ),
-      extendBody: true,
       body: homeProvider.bodyBuild(homeProvider.currentIndex),
     );
   }

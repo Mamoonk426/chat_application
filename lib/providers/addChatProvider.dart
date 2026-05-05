@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:chat_application/components/Toasts.dart';
-import 'package:chat_application/models/requestModel.dart';
+
 import 'package:chat_application/models/userModel.dart';
 import 'package:chat_application/services/getUserServices.dart';
 import 'package:chat_application/services/requestServices.dart';

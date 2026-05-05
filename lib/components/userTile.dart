@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class Usertile extends StatelessWidget {
   final String leading;
@@ -90,7 +89,7 @@ class Usertile extends StatelessWidget {
                   height: 30,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: Theme.of(context).colorScheme.secondary,
+                    color: Theme.of(context).colorScheme.inversePrimary,
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -106,7 +105,7 @@ class Usertile extends StatelessWidget {
                                 .copyWith(
                                   color: Theme.of(
                                     context,
-                                  ).colorScheme.onSecondary,
+                                  ).colorScheme.inverseSurface,
                                 ),
                           ),
                         ),

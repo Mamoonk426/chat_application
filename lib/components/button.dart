@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 
 class Button extends StatelessWidget {
-  String title;
-  Function()? call;
-  bool _isLoading = false;
-  Button({super.key, this.call, required this.title, bool isLoading = false}) {
-    _isLoading = isLoading;
-  }
+  final String title;
+  final Function()? call;
+  final bool isLoading;
+  const Button({
+    super.key,
+    this.call,
+    required this.title,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: call,
-      child: _isLoading
+      child: isLoading
           ? SizedBox(
               width: 25.0,
               height: 25.0,

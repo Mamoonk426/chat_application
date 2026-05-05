@@ -1,15 +1,10 @@
-import 'package:chat_application/Cache/boxes.dart';
 import 'package:chat_application/Cache/chat_model.dart';
 import 'package:chat_application/Cache/failed_message_model.dart';
 import 'package:chat_application/Cache/message_model.dart';
-import 'package:chat_application/models/messageModel.dart';
-import 'package:chat_application/services/chatServices.dart';
-import 'package:chat_application/services/notificationServices.dart';
 import 'package:hive/hive.dart';
 
 class Cacheservices {
   static const String _failedMessagesBox = 'failedMessages';
-  static const String _boxPrefix = 'box';
   static const String _messageboxPrefix = 'messages_';
   Future<Box<HiveChatModel>> openBox(String boxname) async {
     if (Hive.isBoxOpen(boxname)) {
@@ -104,7 +99,7 @@ class Cacheservices {
   Future<void> closeBox(String chatRoomid) async {
     final name = _messageboxPrefix + chatRoomid;
     if (Hive.isBoxOpen(name)) {
-      await Hive.box<MessageModel>(name).close();
+      await Hive.box<HiveMessageModel>(name).close();
     }
   }
 }

@@ -1,15 +1,12 @@
 import 'dart:async';
 
-import 'package:chat_application/models/userModel.dart';
 import 'package:chat_application/providers/chatProvider.dart';
 import 'package:chat_application/services/cacheservices.dart';
 import 'package:chat_application/services/connectivity_Services.dart';
-import 'package:chat_application/services/getUserServices.dart';
 import 'package:chat_application/view/chatListScreen.dart';
 import 'package:chat_application/view/profileDetails.dart';
 import 'package:chat_application/view/requestScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class Homeprovider with ChangeNotifier {
   final Chatprovider chatProvider;

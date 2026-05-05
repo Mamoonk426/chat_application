@@ -11,7 +11,6 @@ import 'package:chat_application/services/notificationServices.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 
 class Chatprovider with ChangeNotifier {
   final dbInstance = FirebaseFirestore.instance;
@@ -25,12 +24,58 @@ class Chatprovider with ChangeNotifier {
   bool get isloading => _isloading;
   bool _ischatloading = false;
   bool get ischatloading => _ischatloading;
-
-  String? _typingReceiverId;
+  String? _searchQuery;
+  String? get searchQuery => _searchQuery;
   StreamSubscription<bool>? listenToType;
+  List<ChatModel> SyncedChats = [];
 
   Future<bool> deleteChat(String chatId) async {
     return chatservices.deleteChat(chatId);
+  }
+
+  void setQuery(String query) {
+    _searchQuery = query;
+    setChats();
+    notifyListeners();
+  }
+
+  String extractRecieverName(
+    Map<String, dynamic> participantsNameMap,
+    List<String> participantsUids,
+  ) {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid ?? "";
+    final otherUserid = participantsUids.firstWhere((p) => p != currentUserId);
+    final recieverName = participantsNameMap[otherUserid];
+    return recieverName;
+  }
+
+  void setChats() {
+    final userId = FirebaseAuth.instance.currentUser!.uid ?? '';
+    if ((searchQuery ?? '').isEmpty) {
+      chats = List.from(SyncedChats);
+      notifyListeners();
+      print(chats);
+    } else {
+      chats =
+          SyncedChats.where((filterChats) {
+            return extractRecieverName(
+              filterChats.participantNames,
+              filterChats.participants,
+            ).toLowerCase().contains((searchQuery ?? '').toLowerCase());
+          }).toList()..sort((a, b) {
+            return b.lastMessageTime.compareTo(a.lastMessageTime);
+          });
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteMessage(String receiverId, String messageId) async {
+    final chatId = await chatservices.generateChatId(receiverId);
+    await chatservices.deleteMessage(chatId, messageId);
+
+    // Also remove from local _messages to reflect immediately if needed
+    _messages.removeWhere((m) => m.documentId == messageId);
+    notifyListeners();
   }
 
   bool isTypingrecieve = false;
@@ -39,10 +84,6 @@ class Chatprovider with ChangeNotifier {
       isTypingrecieve = value;
       notifyListeners();
     });
-  }
-
-  void setTyping(String receiverId) {
-    _typingReceiverId = receiverId;
   }
 
   set isTyping(bool value) {
@@ -270,7 +311,7 @@ class Chatprovider with ChangeNotifier {
         return false;
       }
 
-      final response = await messagingservices.sendNotification(
+      await messagingservices.sendNotification(
         chatId: chatId,
         receiverId: FirebaseAuth.instance.currentUser?.uid ?? '',
         message: message,
@@ -294,11 +335,12 @@ class Chatprovider with ChangeNotifier {
         .getChat(uid)
         .listen(
           (chatList) {
-            chats = chatList;
+            SyncedChats = chatList;
             debugPrint('Provider: ${chats.length} chats synced from Firestore');
-            chats.sort(
+            SyncedChats.sort(
               (a, b) => b.lastMessageTime.compareTo(a.lastMessageTime),
             );
+            setChats();
             _ischatloading = false;
             notifyListeners();
           },
@@ -316,6 +358,7 @@ class Chatprovider with ChangeNotifier {
     _isloading = true;
     _messages = []; // Clear current messages when switching chats
     notifyListeners();
+    await Future.delayed(Duration(seconds: 2));
     final cachemessages = await cacheservices.getmessages(chatId);
     if (cachemessages.isNotEmpty) {
       _messages = cachemessages
@@ -329,11 +372,12 @@ class Chatprovider with ChangeNotifier {
             ),
           )
           .toList();
+      chats.sort((a, b) {
+        return a.lastMessageTime.compareTo(b.lastMessageTime);
+      });
       debugPrint(
         'Loaded ${_messages.length} messages from cache for chat $chatId',
       );
-      _isloading = false;
-      notifyListeners();
     }
 
     _messageStream = _chatservices
@@ -350,11 +394,13 @@ class Chatprovider with ChangeNotifier {
                 );
               }
             }
-
+            _isloading = false;
+            notifyListeners();
             debugPrint(
               'Provider: ${_messages.length} messages synced for $chatId',
             );
             _isloading = false;
+            notifyListeners();
 
             // Auto mark as read if the current message is from the other user and not yet read
             final hasUnread = _messages.any(
@@ -368,7 +414,6 @@ class Chatprovider with ChangeNotifier {
                 FirebaseAuth.instance.currentUser?.uid ?? '',
               );
             }
-
             notifyListeners();
           },
           onError: (error) {

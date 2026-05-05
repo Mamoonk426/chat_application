@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class Customformfield extends StatelessWidget {
-  String title;
-  Icon? prefix;
-  Icon? suffix;
-  IconButton? suffixImage;
-  String? errortext;
-  bool? isObscure;
-  Function(String? value)? onChanged;
-  TextEditingController controller;
-  Customformfield({
+  final String title;
+  final Icon? prefix;
+  final Icon? suffix;
+  final IconButton? suffixImage;
+  final String? errortext;
+  final bool? isObscure;
+  final Function(String? value)? onChanged;
+  final TextEditingController controller;
+  const Customformfield({
     super.key,
     this.onChanged,
     this.suffixImage,

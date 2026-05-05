@@ -1,5 +1,4 @@
 import 'package:chat_application/models/chatModel.dart';
-import 'package:chat_application/models/messageModel.dart';
 import 'package:hive/hive.dart';
 part 'chat_model.g.dart';
 

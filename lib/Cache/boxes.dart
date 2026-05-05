@@ -1,5 +1,4 @@
 import 'package:chat_application/Cache/chat_model.dart';
-import 'package:chat_application/Cache/message_model.dart';
 import 'package:hive/hive.dart';
 
 class Boxes {

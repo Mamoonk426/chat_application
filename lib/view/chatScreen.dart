@@ -1,3 +1,4 @@
+import 'package:chat_application/components/Toasts.dart';
 import 'package:chat_application/components/sendButton.dart';
 import 'package:chat_application/components/typingIndicator.dart';
 import 'package:chat_application/providers/chatProvider.dart';
@@ -33,7 +34,6 @@ class _ChatscreenState extends State<Chatscreen> {
       _chatProvider.setCurrentandOtherUser();
       _chatProvider.markAsRead(widget.id);
       _chatProvider.listenToUserStatus(widget.id);
-      _chatProvider.setTyping(widget.id);
       _onFocusChange = _chatProvider.onFocusChange;
       _onTextChange = () => _chatProvider.onTextChange(message.text);
       _chatProvider.focusNode.addListener(_onFocusChange);
@@ -60,6 +60,39 @@ class _ChatscreenState extends State<Chatscreen> {
     return '$hour:$minute $amPm';
   }
 
+  Future<void> _showDeleteMessageDialog(
+    BuildContext context,
+    Chatprovider chatProvider,
+    String messageId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Message'),
+        content: const Text(
+          'Are you sure you want to delete this message? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await chatProvider.deleteMessage(widget.id, messageId);
+      // Optional: show a toast or snackbar
+      Toasts.successToast("Message Deleted Successfully", context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final chatTheme = Theme.of(context).extension<AppChatTheme>()!;
@@ -71,6 +104,7 @@ class _ChatscreenState extends State<Chatscreen> {
     ).currentUser?.id;
 
     return Scaffold(
+      extendBody: true,
       backgroundColor: chatTheme.chatBackground,
       body: Column(
         children: [
@@ -85,42 +119,38 @@ class _ChatscreenState extends State<Chatscreen> {
             decoration: BoxDecoration(
               color: colorScheme.surface,
               borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(24),
+                bottomRight: Radius.circular(24),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: colorScheme.shadow.withValues(alpha: 0.06),
-                  blurRadius: 12,
-                  offset: const Offset(0, 3),
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: Row(
               children: [
                 IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    size: 20,
-                    color: colorScheme.onSurface,
-                  ),
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
                   onPressed: () {
                     if (mounted) Navigator.pop(context);
                   },
                 ),
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
+                  backgroundColor: colorScheme.primary.withOpacity(0.12),
                   child: Text(
                     widget.name.isNotEmpty ? widget.name[0].toUpperCase() : '?',
                     style: TextStyle(
                       color: colorScheme.primary,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       fontSize: 16,
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,8 +158,8 @@ class _ChatscreenState extends State<Chatscreen> {
                     children: [
                       Text(
                         widget.name,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
+                        style: AppTextStyles.titleMedium.copyWith(
+                          fontWeight: FontWeight.w700,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -175,12 +205,12 @@ class _ChatscreenState extends State<Chatscreen> {
                               style: Theme.of(context).textTheme.labelSmall
                                   ?.copyWith(
                                     color: chatProvider.isUserOnline
-                                        ? Colors.green.shade700
-                                        : colorScheme.onSurface.withValues(
-                                            alpha: 0.5,
+                                        ? AppColors.success
+                                        : colorScheme.onSurface.withOpacity(
+                                            0.5,
                                           ),
                                     fontWeight: chatProvider.isUserOnline
-                                        ? FontWeight.w500
+                                        ? FontWeight.w600
                                         : FontWeight.normal,
                                   ),
                             ),
@@ -243,102 +273,112 @@ class _ChatscreenState extends State<Chatscreen> {
                               final msg = chatProvider.messages[index];
                               final isMe = msg.senderId == currentUserId;
 
-                              return Align(
-                                alignment: isMe
-                                    ? Alignment.centerRight
-                                    : Alignment.centerLeft,
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 8),
-                                  constraints: BoxConstraints(
-                                    maxWidth:
-                                        MediaQuery.of(context).size.width *
-                                        0.75,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    gradient: isMe
-                                        ? LinearGradient(
-                                            colors: [
-                                              colorScheme.primary,
-                                              colorScheme.primary.withValues(
-                                                alpha: 0.7,
-                                              ),
-                                            ],
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                          )
-                                        : null,
-                                    color: isMe
-                                        ? null
-                                        : chatTheme.bubbleReceived,
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: const Radius.circular(20),
-                                      topRight: const Radius.circular(20),
-                                      bottomLeft: isMe
-                                          ? const Radius.circular(20)
-                                          : const Radius.circular(4),
-                                      bottomRight: isMe
-                                          ? const Radius.circular(4)
-                                          : const Radius.circular(20),
+                              return GestureDetector(
+                                onLongPress: () {
+                                  _showDeleteMessageDialog(
+                                    context,
+                                    chatProvider,
+                                    msg.documentId,
+                                  );
+                                },
+                                child: Align(
+                                  alignment: isMe
+                                      ? Alignment.centerRight
+                                      : Alignment.centerLeft,
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 8),
+                                    constraints: BoxConstraints(
+                                      maxWidth:
+                                          MediaQuery.of(context).size.width *
+                                          0.75,
                                     ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: isMe
-                                            ? colorScheme.primary.withValues(
-                                                alpha: 0.25,
-                                              )
-                                            : colorScheme.shadow.withValues(
-                                                alpha: 0.05,
-                                              ),
-                                        blurRadius: 8,
-                                        spreadRadius: 1,
-                                        offset: const Offset(0, 3),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 10,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      gradient: isMe
+                                          ? LinearGradient(
+                                              colors: [
+                                                colorScheme.primary,
+                                                colorScheme.primary.withOpacity(
+                                                  0.8,
+                                                ),
+                                              ],
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            )
+                                          : null,
+                                      color: isMe
+                                          ? null
+                                          : chatTheme.bubbleReceived,
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: const Radius.circular(20),
+                                        topRight: const Radius.circular(20),
+                                        bottomLeft: isMe
+                                            ? const Radius.circular(20)
+                                            : const Radius.circular(4),
+                                        bottomRight: isMe
+                                            ? const Radius.circular(4)
+                                            : const Radius.circular(20),
                                       ),
-                                    ],
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        msg.message,
-                                        style: TextStyle(
+                                      boxShadow: [
+                                        BoxShadow(
                                           color: isMe
-                                              ? chatTheme.bubbleSentText
-                                              : chatTheme.bubbleReceivedText,
-                                          fontSize: 15,
+                                              ? colorScheme.primary.withOpacity(
+                                                  0.2,
+                                                )
+                                              : Colors.black.withOpacity(0.03),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 3),
                                         ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      SizedBox(
-                                        width: 63,
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              _formatMessageTime(msg.sentAt),
-                                              style: TextStyle(
-                                                color:
-                                                    (isMe
-                                                            ? chatTheme
-                                                                  .bubbleSentText
-                                                            : chatTheme
-                                                                  .bubbleReceivedText)
-                                                        .withValues(alpha: 0.6),
-                                                fontSize: 10,
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          msg.message,
+                                          style: TextStyle(
+                                            color: isMe
+                                                ? chatTheme.bubbleSentText
+                                                : chatTheme.bubbleReceivedText,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        SizedBox(
+                                          width: 63,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                _formatMessageTime(msg.sentAt),
+                                                style: TextStyle(
+                                                  color:
+                                                      (isMe
+                                                              ? chatTheme
+                                                                    .bubbleSentText
+                                                              : chatTheme
+                                                                    .bubbleReceivedText)
+                                                          .withValues(
+                                                            alpha: 0.6,
+                                                          ),
+                                                  fontSize: 10,
+                                                ),
                                               ),
-                                            ),
-                                            SizedBox(width: 5),
-                                            isMe
-                                                ? chatProvider.buildStatusIcon(
-                                                    msg.status.toString(),
-                                                  )
-                                                : SizedBox.shrink(),
-                                          ],
+                                              SizedBox(width: 5),
+                                              isMe
+                                                  ? chatProvider
+                                                        .buildStatusIcon(
+                                                          msg.status.toString(),
+                                                        )
+                                                  : SizedBox.shrink(),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );
@@ -414,8 +454,6 @@ class _ChatscreenState extends State<Chatscreen> {
                                     child: TextField(
                                       focusNode: chatProvider.focusNode,
                                       controller: message,
-                                      minLines: 1,
-                                      maxLines: 5,
                                       decoration: const InputDecoration(
                                         hintText: '     Type a message...',
                                         border: InputBorder.none,

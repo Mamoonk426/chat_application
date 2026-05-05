@@ -182,4 +182,13 @@ class Chatservices {
     await batch.commit();
     return true;
   }
+
+  Future<void> deleteMessage(String chatId, String messageId) async {
+    await dbInstance
+        .collection('ChatRoom')
+        .doc(chatId)
+        .collection('Messages')
+        .doc(messageId)
+        .delete();
+  }
 }

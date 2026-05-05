@@ -1,6 +1,5 @@
 import 'package:chat_application/components/customFormField.dart';
 import 'package:chat_application/components/userTile.dart';
-import 'package:chat_application/models/requestModel.dart';
 import 'package:chat_application/providers/addChatProvider.dart';
 import 'package:chat_application/view/userInfoScreen.dart';
 import 'package:chat_application/providers/userProvider.dart';
@@ -89,7 +88,10 @@ class _AddchatscreenState extends State<Addchatscreen> {
                     final isFriend = chat.isFriendWith(user.id);
                     final hasSentRequest = chat.hasSentRequestTo(user.id);
                     if (user.id ==
-                        Provider.of<Userprovider>(context, listen: false).currentUser?.id) {
+                        Provider.of<Userprovider>(
+                          context,
+                          listen: false,
+                        ).currentUser?.id) {
                       return SizedBox.shrink();
                     }
 

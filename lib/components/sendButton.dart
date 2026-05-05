@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Sendbutton extends StatefulWidget {
-  Function()? send;
-  Sendbutton({super.key, this.send});
+  final Function()? send;
+  const Sendbutton({super.key, this.send});
 
   @override
   State<Sendbutton> createState() => _SendbuttonState();
@@ -24,4 +24,3 @@ class _SendbuttonState extends State<Sendbutton> {
     );
   }
 }
-

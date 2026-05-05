@@ -1,4 +1,5 @@
 import 'package:chat_application/components/requestTile.dart';
+import 'package:chat_application/themes/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chat_application/providers/addChatProvider.dart';
 import 'package:chat_application/providers/requestProvider.dart';
@@ -41,54 +42,81 @@ class _RequestscreenState extends State<Requestscreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 10),
-              // ── Header ──
-              Text(
-                'Social',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // ── Main Section Toggle ──
-              SizedBox(
-                width: double.infinity,
-                child: SegmentedButton<bool>(
-                  segments: const [
-                    ButtonSegment<bool>(
-                      value: false,
-                      label: Text('Requests'),
-                      icon: Icon(Icons.people_outline, size: 18),
-                    ),
-                    ButtonSegment<bool>(
-                      value: true,
-                      label: Text('Friends List'),
-                      icon: Icon(Icons.person_pin_circle_outlined, size: 18),
-                    ),
-                  ],
-                  selected: {request.isFriendsTab},
-                  onSelectionChanged: (selected) {
-                    request.toggleMainTab(selected.first);
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // ── Content ──
-              Expanded(
-                child: request.isFriendsTab
-                    ? _buildFriendsList(request, chat, colorScheme)
-                    : _buildRequestsSection(request, chat, colorScheme),
-              ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              colorScheme.surface,
+              colorScheme.surface.withOpacity(0.8),
             ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24),
+                // ── Header ──
+                Text(
+                  'Social',
+                  style: AppTextStyles.headlineLarge.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Text(
+                  'Manage your connections',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: colorScheme.onSurface.withOpacity(0.6),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // ── Main Section Toggle ──
+                SizedBox(
+                  width: double.infinity,
+                  child: SegmentedButton<bool>(
+                    style: SegmentedButton.styleFrom(
+                      backgroundColor: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                      selectedBackgroundColor: colorScheme.primary,
+                      selectedForegroundColor: colorScheme.onPrimary,
+                      side: BorderSide.none,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    segments: const [
+                      ButtonSegment<bool>(
+                        value: false,
+                        label: Text('Requests'),
+                        icon: Icon(Icons.people_outline_rounded, size: 18),
+                      ),
+                      ButtonSegment<bool>(
+                        value: true,
+                        label: Text('Friends'),
+                        icon: Icon(Icons.person_rounded, size: 18),
+                      ),
+                    ],
+                    selected: {request.isFriendsTab},
+                    onSelectionChanged: (selected) {
+                      request.toggleMainTab(selected.first);
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // ── Content ──
+                Expanded(
+                  child: request.isFriendsTab
+                      ? _buildFriendsList(request, chat, colorScheme)
+                      : _buildRequestsSection(request, chat, colorScheme),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,6 +1,5 @@
 import 'package:chat_application/models/messageModel.dart';
 import 'package:chat_application/providers/chatProvider.dart';
-import 'package:chat_application/services/enumServices.dart';
 import 'package:hive/hive.dart';
 part 'failed_message_model.g.dart';
 

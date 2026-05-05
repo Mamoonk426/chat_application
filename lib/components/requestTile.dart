@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class Requesttile extends StatefulWidget {
-  String? leading;
-  String? title;
-  String? trailing;
-  Function? confirmCall;
-  Function? cancelCall;
-  Function? startChat;
-  bool isAccepted;
-  bool isSentRequest;
-  String? statusLabel;
-  Requesttile({
+  final String? leading;
+  final String? title;
+  final String? trailing;
+  final Function? confirmCall;
+  final Function? cancelCall;
+  final Function? startChat;
+  final bool isAccepted;
+  final bool isSentRequest;
+  final String? statusLabel;
+  const Requesttile({
     super.key,
     this.leading,
     this.title,
@@ -56,8 +56,10 @@ class _RequesttileState extends State<Requesttile> {
                   Text(
                     widget.trailing.toString(),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                        ),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.7),
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 8),
@@ -108,13 +110,19 @@ class _RequesttileState extends State<Requesttile> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.chat, color: Theme.of(context).colorScheme.primary, size: 18),
+                            Icon(
+                              Icons.chat,
+                              color: Theme.of(context).colorScheme.primary,
+                              size: 18,
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               'Start Chat',
