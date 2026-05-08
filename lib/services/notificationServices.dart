@@ -35,6 +35,13 @@ class Messagingservices {
       debugPrint('User declined or has not accepted permission');
     }
 
+    // 2. Set Foreground Notification Options (for iOS/macOS)
+    await firebaseMessaging.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
     // 3. Initialize Local Notifications & Listeners (don't block on token)
     await initLocalNotification();
     _setupForegroundListener();
@@ -47,15 +54,10 @@ class Messagingservices {
     FirebaseMessaging.onMessage.listen((message) {
       debugPrint("Foreground message received: ${message.notification?.title}");
 
-      // ✅ To only show notifications in background, we DON'T call showNotification here.
-      // The OS will automatically show the notification when the app is closed/backgrounded
-      // if the FCM payload includes a 'notification' object.
-
-      /* 
+      // ✅ Now showing notification in foreground using local notifications
       if (message.notification != null || message.data.isNotEmpty) {
         showNotification(message);
       }
-      */
     });
   }
 
@@ -132,20 +134,30 @@ class Messagingservices {
       settings: initializationSetting,
       onDidReceiveNotificationResponse: (details) {},
     );
+
+    // Create the high importance channel for Android
+    if (Platform.isAndroid) {
+      const AndroidNotificationChannel channel = AndroidNotificationChannel(
+        'high_importance_channel',
+        'High Importance Notifications',
+        description: 'Used for important notifications',
+        importance: Importance.max,
+        playSound: true,
+      );
+
+      await _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
+          ?.createNotificationChannel(channel);
+    }
   }
 
   Future<void> showNotification(RemoteMessage message) async {
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'high_importance_channel',
-      'High Importance Notifications',
-      importance: Importance.max,
-      playSound: true,
-    );
-
     AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
-          channel.id,
-          channel.name,
+        const AndroidNotificationDetails(
+          'high_importance_channel',
+          'High Importance Notifications',
           channelDescription: 'Used for important notifications',
           importance: Importance.max,
           priority: Priority.high,

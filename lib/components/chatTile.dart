@@ -6,13 +6,15 @@ class ChatTile extends StatelessWidget {
   final DateTime lastMessageTime;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
+  int? unreadCounts;
 
-  const ChatTile({
+  ChatTile({
     super.key,
     required this.receiverName,
     required this.lastMessage,
     required this.lastMessageTime,
     required this.onTap,
+    required this.unreadCounts,
     required this.onLongPress,
   });
 
@@ -159,7 +161,7 @@ class ChatTile extends StatelessWidget {
 
                 // ── Time & potentially unread badges ──
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       _formatTime(lastMessageTime),
@@ -170,14 +172,29 @@ class ChatTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     // Just a placeholder for unseen message indicator styling
-                    // Container(
-                    //   padding: const EdgeInsets.all(6),
-                    //   decoration: BoxDecoration(
-                    //     color: colorScheme.secondary,
-                    //     shape: BoxShape.circle,
-                    //   ),
-                    //   child: Text('2', style: TextStyle(color: colorScheme.onSecondary, fontSize: 10, fontWeight: FontWeight.bold)),
-                    // ),
+                    (unreadCounts ?? 0) == 0
+                        ? SizedBox.shrink()
+                        : Container(
+                            width: 30,
+                            height: 30,
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: colorScheme.secondary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                (unreadCounts ?? 0) > 99
+                                    ? '99+'
+                                    : unreadCounts.toString(),
+                                style: TextStyle(
+                                  color: colorScheme.inverseSurface,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
                   ],
                 ),
               ],

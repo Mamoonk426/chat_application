@@ -98,6 +98,7 @@ class _ProfiledetailsState extends State<Profiledetails> {
               ),
               child: Column(
                 children: [
+                  SizedBox(height: 20),
                   Stack(
                     children: [
                       Container(

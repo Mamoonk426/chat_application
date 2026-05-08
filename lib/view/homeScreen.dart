@@ -31,7 +31,7 @@ class _HomescreenState extends State<Homescreen> {
     return Scaffold(
       extendBody: true,
       bottomNavigationBar: Container(
-        height: 85,
+        height: 70,
         margin: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
@@ -52,41 +52,45 @@ class _HomescreenState extends State<Homescreen> {
           borderRadius: BorderRadius.circular(35),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-            child: BottomNavigationBar(
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              currentIndex: homeProvider.currentIndex,
-              showSelectedLabels: true,
-              showUnselectedLabels: false,
-              selectedItemColor: Theme.of(context).colorScheme.primary,
-              unselectedItemColor: Theme.of(
-                context,
-              ).colorScheme.onSurface.withOpacity(0.4),
-              type: BottomNavigationBarType.fixed,
-              selectedLabelStyle: AppTextStyles.labelSmall.copyWith(
-                fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.primary,
+            child: MediaQuery.removePadding(
+              context: context,
+              removeBottom: true,
+              child: BottomNavigationBar(
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                currentIndex: homeProvider.currentIndex,
+                showSelectedLabels: true,
+                showUnselectedLabels: false,
+                selectedItemColor: Theme.of(context).colorScheme.primary,
+                unselectedItemColor: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withOpacity(0.4),
+                type: BottomNavigationBarType.fixed,
+                selectedLabelStyle: AppTextStyles.labelSmall.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                onTap: (value) {
+                  homeProvider.setIndex(value);
+                },
+                items: const [
+                  BottomNavigationBarItem(
+                    label: 'Chats',
+                    icon: Icon(Icons.chat_bubble_outline_rounded, size: 30),
+                    activeIcon: Icon(Icons.chat_bubble_rounded, size: 30),
+                  ),
+                  BottomNavigationBarItem(
+                    label: 'Requests',
+                    icon: Icon(Icons.people_outline_rounded, size: 30),
+                    activeIcon: Icon(Icons.people_rounded, size: 30),
+                  ),
+                  BottomNavigationBarItem(
+                    label: 'Profile',
+                    icon: Icon(Icons.person_outline_rounded, size: 30),
+                    activeIcon: Icon(Icons.person_rounded, size: 30),
+                  ),
+                ],
               ),
-              onTap: (value) {
-                homeProvider.setIndex(value);
-              },
-              items: const [
-                BottomNavigationBarItem(
-                  label: 'Chats',
-                  icon: Icon(Icons.chat_bubble_outline_rounded, size: 24),
-                  activeIcon: Icon(Icons.chat_bubble_rounded, size: 28),
-                ),
-                BottomNavigationBarItem(
-                  label: 'Requests',
-                  icon: Icon(Icons.people_outline_rounded, size: 24),
-                  activeIcon: Icon(Icons.people_rounded, size: 28),
-                ),
-                BottomNavigationBarItem(
-                  label: 'Profile',
-                  icon: Icon(Icons.person_outline_rounded, size: 24),
-                  activeIcon: Icon(Icons.person_rounded, size: 28),
-                ),
-              ],
             ),
           ),
         ),

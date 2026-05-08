@@ -28,6 +28,8 @@ class Chatprovider with ChangeNotifier {
   String? get searchQuery => _searchQuery;
   StreamSubscription<bool>? listenToType;
   List<ChatModel> SyncedChats = [];
+  StreamSubscription<Map<String, int>>? _unreadCountStream;
+  Map<String, int> chatsUnreadCounts = {};
 
   Future<bool> deleteChat(String chatId) async {
     return chatservices.deleteChat(chatId);
@@ -67,6 +69,15 @@ class Chatprovider with ChangeNotifier {
           });
       notifyListeners();
     }
+  }
+
+  void listenToUnreadCounts({String? chatId}) {
+    _unreadCountStream?.cancel();
+    _unreadCountStream = chatservices.getUnreadCounts().listen((counts) {
+      chatsUnreadCounts = counts;
+      notifyListeners();
+      print("UNREAD MAP  ---->>  :${counts[chatId]} ");
+    });
   }
 
   Future<void> deleteMessage(String receiverId, String messageId) async {
@@ -358,7 +369,7 @@ class Chatprovider with ChangeNotifier {
     _isloading = true;
     _messages = []; // Clear current messages when switching chats
     notifyListeners();
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(milliseconds: 600));
     final cachemessages = await cacheservices.getmessages(chatId);
     if (cachemessages.isNotEmpty) {
       _messages = cachemessages
@@ -385,7 +396,7 @@ class Chatprovider with ChangeNotifier {
         .listen(
           (newMessages) {
             _messages = newMessages;
-            final cachedIds = _messages.map((m) => m.documentId).toSet();
+            final cachedIds = cachemessages.map((m) => m.id).toSet();
             for (final msg in newMessages) {
               if (!cachedIds.contains(msg.documentId)) {
                 cacheservices.cacheMessages(

@@ -31,144 +31,151 @@ class Userinfoscreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Profile Header - Redesigned without gradient
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 30,
-                bottom: 40,
-              ),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [AppColors.primary600, AppColors.primary500],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Profile Header - Redesigned without gradient
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 30,
+                  bottom: 40,
                 ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(40),
-                  bottomRight: Radius.circular(40),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [AppColors.primary600, AppColors.primary500],
+                  ),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(40),
+                    bottomRight: Radius.circular(40),
+                  ),
                 ),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Colors.white24,
-                      shape: BoxShape.circle,
-                    ),
-                    child: CircleAvatar(
-                      radius: 54,
-                      backgroundColor: Colors.white,
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.white24,
+                        shape: BoxShape.circle,
+                      ),
                       child: CircleAvatar(
-                        radius: 50,
-                        backgroundColor: AppColors.grey50,
-                        child: Text(
-                          _getInitials(user.name),
-                          style: AppTextStyles.displaySmall.copyWith(
-                            color: AppColors.primary500,
-                            fontSize: 32,
-                            fontWeight: FontWeight.w800,
+                        radius: 54,
+                        backgroundColor: Colors.white,
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor: AppColors.grey50,
+                          child: Text(
+                            _getInitials(user.name),
+                            style: AppTextStyles.displaySmall.copyWith(
+                              color: AppColors.primary500,
+                              fontSize: 32,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    user.name,
-                    style: AppTextStyles.headlineMedium.copyWith(
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                    const SizedBox(height: 20),
+                    Text(
+                      user.name,
+                      style: AppTextStyles.headlineMedium.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: user.isOnline
-                                ? AppColors.secondary500
-                                : AppColors.grey400,
-                            shape: BoxShape.circle,
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: user.isOnline
+                                  ? AppColors.secondary500
+                                  : AppColors.grey400,
+                              shape: BoxShape.circle,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          user.isOnline ? "Online" : "Offline",
-                          style: AppTextStyles.labelMedium.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                          const SizedBox(width: 8),
+                          Text(
+                            user.isOnline ? "Online" : "Offline",
+                            style: AppTextStyles.labelMedium.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 32),
+              const SizedBox(height: 32),
 
-            // Info Sections
-            buildSection(context, "Contact Info", [
-              buildListTile(context, Icons.email_outlined, "Email", user.email),
-              if (user.phoneNumber != null && user.phoneNumber!.isNotEmpty)
+              // Info Sections
+              buildSection(context, "Contact Info", [
                 buildListTile(
                   context,
-                  Icons.phone_outlined,
-                  "Phone Number",
-                  user.phoneNumber!,
+                  Icons.email_outlined,
+                  "Email",
+                  user.email,
                 ),
-            ]),
-
-            const SizedBox(height: 32),
-
-            // Start Chat Button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pushReplacement(
+                if (user.phoneNumber != null && user.phoneNumber!.isNotEmpty)
+                  buildListTile(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          Chatscreen(id: user.id, name: user.name),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 60),
-                  backgroundColor: AppColors.secondary500,
-                  foregroundColor: AppColors.primary900,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    Icons.phone_outlined,
+                    "Phone Number",
+                    user.phoneNumber!,
                   ),
-                  elevation: 0,
-                ),
-                icon: const Icon(Icons.chat_bubble_rounded),
-                label: const Text(
-                  "Send Message",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+              ]),
+
+              const SizedBox(height: 32),
+
+              // Start Chat Button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            Chatscreen(id: user.id, name: user.name),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 60),
+                    backgroundColor: AppColors.secondary500,
+                    foregroundColor: AppColors.primary900,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 0,
+                  ),
+                  icon: const Icon(Icons.chat_bubble_rounded),
+                  label: const Text(
+                    "Send Message",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 40),
-          ],
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );

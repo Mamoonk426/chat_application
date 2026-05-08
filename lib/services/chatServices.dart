@@ -44,7 +44,7 @@ class Chatservices {
       'lastMessageSenderId': newMessage.senderId,
       'participants': FieldValue.arrayUnion([receiverId, senderId]),
     }, SetOptions(merge: true));
-
+    batch.update(chatRef, {'unreadCounts': FieldValue.increment(1)});
     batch.set(messageDoc, newMessage.toMap());
 
     await batch.commit();
@@ -76,11 +76,17 @@ class Chatservices {
     final batch = dbInstance.batch();
     final messageDoc = messageRef.doc();
     batch.set(chatRef, {
-      'lastMessage': newMessage.toMap(),
+      'lastMessage': newMessage.message,
       'lastMessageTime': Timestamp.fromDate(newMessage.sentAt),
       'lastMessageSenderId': newMessage.senderId,
-      'participants': [recieverId, senderId],
-      'participantNames': {senderId: senderName, recieverId: receiverName},
+      'participants': [senderId, recieverId],
+      'participantNames': {
+        senderId: senderName,
+        recieverId: receiverName,
+      }, // ← was recieverId, now receiverName
+      'senderName': senderName,
+      'receiverName': receiverName,
+      'unreadCounts': FieldValue.increment(1),
     }, SetOptions(merge: true));
     batch.set(messageDoc, newMessage.toMap());
 
@@ -138,7 +144,11 @@ class Chatservices {
     }
 
     if (hasUpdate) {
+      await dbInstance.collection("ChatRoom").doc(chatId).update({
+        "unreadCounts": 0,
+      });
       await batch.commit();
+
       print("DEBUG: MARKED AS READ batch committed");
     }
   }
@@ -190,5 +200,21 @@ class Chatservices {
         .collection('Messages')
         .doc(messageId)
         .delete();
+  }
+
+  Stream<Map<String, int>> getUnreadCounts() {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    return dbInstance
+        .collection('ChatRoom')
+        .where('participants', arrayContains: currentUserId)
+        .snapshots()
+        .map((counts) {
+          final Map<String, int> count = {};
+          for (final c in counts.docs) {
+            final unreadCounts = c.data()['unreadCounts'] as int;
+            count[c.id] = unreadCounts;
+          }
+          return count;
+        });
   }
 }

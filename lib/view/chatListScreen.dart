@@ -27,6 +27,7 @@ class _ChatscreenState extends State<Chatlistscreen> {
       final chat = Provider.of<Chatprovider>(context, listen: false);
       chat.chatListen();
       Provider.of<Userprovider>(context, listen: false).setUserStatus();
+      chat.listenToUnreadCounts();
       _isLoaded = true;
     }
   }
@@ -204,7 +205,12 @@ class _ChatscreenState extends State<Chatlistscreen> {
                           final otherId = _otherUserId(chatItem.participants);
 
                           return ChatTile(
+                            unreadCounts:
+                                chat.chatsUnreadCounts[chatItem.documentId],
                             onLongPress: () {
+                              chat.listenToUnreadCounts(
+                                chatId: chatItem.documentId,
+                              );
                               _showDeleteConfirmationDialog(
                                 context,
                                 chat,

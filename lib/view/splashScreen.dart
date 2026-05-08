@@ -50,13 +50,13 @@ class _SplashscreenState extends State<Splashscreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.chat_bubble_rounded,
-                size: 80,
-                color: Colors.white,
+              child: Image.asset(
+                "assets/Images/app_icon.png",
+                height: 80,
+                width: 80,
               ),
             ),
             const SizedBox(height: 24),
