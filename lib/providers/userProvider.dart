@@ -31,6 +31,7 @@ class Userprovider extends ChangeNotifier {
         notifyListeners();
       } else {
         _listenToUserDoc(user.uid);
+        setUserStatus();
       }
     });
   }

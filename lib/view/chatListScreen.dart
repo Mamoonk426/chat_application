@@ -205,8 +205,10 @@ class _ChatscreenState extends State<Chatlistscreen> {
                           final otherId = _otherUserId(chatItem.participants);
 
                           return ChatTile(
+                            receiverId: otherId,
                             unreadCounts:
-                                chat.chatsUnreadCounts[chatItem.documentId],
+                                chat.chatsUnreadCounts[chatItem
+                                    .documentId]?[Chatprovider.currentUserId],
                             onLongPress: () {
                               chat.listenToUnreadCounts(
                                 chatId: chatItem.documentId,

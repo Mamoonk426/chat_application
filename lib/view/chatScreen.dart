@@ -4,6 +4,7 @@ import 'package:chat_application/components/typingIndicator.dart';
 import 'package:chat_application/providers/chatProvider.dart';
 import 'package:chat_application/themes/app_theme.dart';
 import 'package:chat_application/providers/userProvider.dart';
+import 'package:chat_application/view/userInfoScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -138,15 +139,25 @@ class _ChatscreenState extends State<Chatscreen> {
                     if (mounted) Navigator.pop(context);
                   },
                 ),
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: colorScheme.primary.withOpacity(0.12),
-                  child: Text(
-                    widget.name.isNotEmpty ? widget.name[0].toUpperCase() : '?',
-                    style: TextStyle(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Userinfoscreen(userId: widget.id),
+                      ),
+                    );
+                  },
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: colorScheme.primary.withOpacity(0.12),
+                    child: Text(
+                      widget.name.isNotEmpty ? widget.name[0].toUpperCase() : '?',
+                      style: TextStyle(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),

@@ -1,24 +1,92 @@
+import 'dart:async';
 import 'package:chat_application/models/userModel.dart';
+import 'package:chat_application/providers/addChatProvider.dart';
+import 'package:chat_application/services/authServices.dart';
 import 'package:chat_application/themes/app_theme.dart';
 import 'package:chat_application/view/chatScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:chat_application/services/getUserServices.dart';
+import 'package:provider/provider.dart';
 
-class Userinfoscreen extends StatelessWidget {
-  final Usermodel user;
+class Userinfoscreen extends StatefulWidget {
+  final Usermodel? user;
+  final String? userId;
 
-  const Userinfoscreen({super.key, required this.user});
+  const Userinfoscreen({super.key, this.user, this.userId});
+
+  @override
+  State<Userinfoscreen> createState() => _UserinfoscreenState();
+}
+
+class _UserinfoscreenState extends State<Userinfoscreen> {
+  Usermodel? _user;
+  bool _isLoading = true;
+  StreamSubscription? _statusSubscription;
+  bool _isOnline = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.user != null) {
+      _user = widget.user;
+      _isLoading = false;
+      _listenToStatus(_user!.id);
+    } else if (widget.userId != null) {
+      _fetchUser(widget.userId!);
+    }
+  }
+
+  @override
+  void dispose() {
+    _statusSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _listenToStatus(String uid) {
+    _statusSubscription?.cancel();
+    _statusSubscription = Authservices().listenUserStatus(uid).listen((
+      statusMap,
+    ) {
+      if (mounted) {
+        setState(() {
+          _isOnline = statusMap?['status'] == 'Online';
+        });
+      }
+    });
+  }
+
+  Future<void> _fetchUser(String uid) async {
+    final fetched = await Getuserservices().getUserById(uid);
+    if (!mounted) return;
+    setState(() {
+      _user = fetched;
+      _isLoading = false;
+    });
+    if (fetched != null) {
+      _listenToStatus(fetched.id);
+    }
+  }
 
   String _getInitials(String name) {
     if (name.isEmpty) return "??";
-    List<String> parts = name.trim().split(RegExp(r'\s+'));
-    if (parts.length > 1) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
-    }
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.length > 1) return (parts[0][0] + parts[1][0]).toUpperCase();
     return parts[0][0].toUpperCase();
   }
 
   @override
   Widget build(BuildContext context) {
+    final addChatproviders = Provider.of<addChatprovider>(
+      context,
+      listen: false,
+    );
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (_user == null) {
+      return const Scaffold(body: Center(child: Text("User not found")));
+    }
+    final user = _user!;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -31,151 +99,141 @@ class Userinfoscreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Profile Header - Redesigned without gradient
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top + 30,
-                  bottom: 40,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Profile Header
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 30,
+                bottom: 40,
+              ),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppColors.primary600, AppColors.primary500],
                 ),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [AppColors.primary600, AppColors.primary500],
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(40),
-                    bottomRight: Radius.circular(40),
-                  ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(40),
+                  bottomRight: Radius.circular(40),
                 ),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Colors.white24,
-                        shape: BoxShape.circle,
-                      ),
+              ),
+              child: Column(
+                children: [
+                  SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.white24,
+                      shape: BoxShape.circle,
+                    ),
+                    child: CircleAvatar(
+                      radius: 54,
+                      backgroundColor: Colors.white,
                       child: CircleAvatar(
-                        radius: 54,
-                        backgroundColor: Colors.white,
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundColor: AppColors.grey50,
-                          child: Text(
-                            _getInitials(user.name),
-                            style: AppTextStyles.displaySmall.copyWith(
-                              color: AppColors.primary500,
-                              fontSize: 32,
-                              fontWeight: FontWeight.w800,
-                            ),
+                        radius: 50,
+                        backgroundColor: AppColors.grey50,
+                        child: Text(
+                          _getInitials(user.name),
+                          style: AppTextStyles.displaySmall.copyWith(
+                            color: AppColors.primary500,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      user.name,
-                      style: AppTextStyles.headlineMedium.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: user.isOnline
-                                  ? AppColors.secondary500
-                                  : AppColors.grey400,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            user.isOnline ? "Online" : "Offline",
-                            style: AppTextStyles.labelMedium.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // Info Sections
-              buildSection(context, "Contact Info", [
-                buildListTile(
-                  context,
-                  Icons.email_outlined,
-                  "Email",
-                  user.email,
-                ),
-                if (user.phoneNumber != null && user.phoneNumber!.isNotEmpty)
-                  buildListTile(
-                    context,
-                    Icons.phone_outlined,
-                    "Phone Number",
-                    user.phoneNumber!,
                   ),
-              ]),
-
-              const SizedBox(height: 32),
-
-              // Start Chat Button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            Chatscreen(id: user.id, name: user.name),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 60),
-                    backgroundColor: AppColors.secondary500,
-                    foregroundColor: AppColors.primary900,
-                    shape: RoundedRectangleBorder(
+                  const SizedBox(height: 20),
+                  Text(
+                    user.name,
+                    style: AppTextStyles.headlineMedium.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    elevation: 0,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: _isOnline
+                                ? AppColors.secondary500
+                                : AppColors.grey400,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _isOnline ? "Online" : "Offline",
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  icon: const Icon(Icons.chat_bubble_rounded),
-                  label: const Text(
-                    "Send Message",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            // Info Sections
+            buildSection(context, "Contact Info", [
+              buildListTile(context, Icons.email_outlined, "Email", user.email),
+              if (user.phoneNumber != null && user.phoneNumber!.isNotEmpty)
+                buildListTile(
+                  context,
+                  Icons.phone_outlined,
+                  "Phone Number",
+                  user.phoneNumber!,
+                ),
+            ]),
+            const SizedBox(height: 32),
+            // Start Chat Button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => Chatscreen(id: user.id, name: user.name),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 60),
+                  backgroundColor: AppColors.secondary500,
+                  foregroundColor: AppColors.primary900,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
+                  elevation: 0,
+                ),
+                icon: const Icon(Icons.chat_bubble_rounded),
+                label: const Text(
+                  "Send Message",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
               ),
-              const SizedBox(height: 40),
-            ],
-          ),
+            ),
+            const SizedBox(height: 40),
+          ],
         ),
       ),
     );

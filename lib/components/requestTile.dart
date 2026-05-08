@@ -1,9 +1,12 @@
+import 'package:chat_application/components/userStatusDot.dart';
+import 'package:chat_application/view/userInfoScreen.dart';
 import 'package:flutter/material.dart';
 
 class Requesttile extends StatefulWidget {
   final String? leading;
   final String? title;
   final String? trailing;
+  final String? userId; // Added userId
   final Function? confirmCall;
   final Function? cancelCall;
   final Function? startChat;
@@ -15,6 +18,7 @@ class Requesttile extends StatefulWidget {
     this.leading,
     this.title,
     this.trailing,
+    this.userId, // Added userId
     this.cancelCall,
     this.confirmCall,
     this.isAccepted = false,
@@ -36,10 +40,30 @@ class _RequesttileState extends State<Requesttile> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              height: 80,
-              width: 80,
-              child: CircleAvatar(child: Text(widget.leading.toString())),
+            GestureDetector(
+              onTap: () {
+                if (widget.userId != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          Userinfoscreen(userId: widget.userId),
+                    ),
+                  );
+                }
+              },
+              child: SizedBox(
+                height: 80,
+                width: 80,
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 40,
+                      child: Text(widget.leading.toString()),
+                    ),
+                  ],
+                ),
+              ),
             ),
             SizedBox(width: 10),
             Expanded(

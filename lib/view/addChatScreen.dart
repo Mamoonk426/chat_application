@@ -110,6 +110,7 @@ class _AddchatscreenState extends State<Addchatscreen> {
                     }
 
                     return Usertile(
+                      userId: user.id,
                       onPressed: () async {
                         if (isFriend || hasSentRequest) {
                           Navigator.push(

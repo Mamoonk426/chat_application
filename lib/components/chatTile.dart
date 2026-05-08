@@ -1,7 +1,10 @@
+import 'package:chat_application/components/userStatusDot.dart';
+import 'package:chat_application/view/userInfoScreen.dart';
 import 'package:flutter/material.dart';
 
 class ChatTile extends StatelessWidget {
   final String receiverName;
+  final String receiverId;
   final String lastMessage;
   final DateTime lastMessageTime;
   final VoidCallback onTap;
@@ -11,6 +14,7 @@ class ChatTile extends StatelessWidget {
   ChatTile({
     super.key,
     required this.receiverName,
+    required this.receiverId,
     required this.lastMessage,
     required this.lastMessageTime,
     required this.onTap,
@@ -94,36 +98,51 @@ class ChatTile extends StatelessWidget {
             child: Row(
               children: [
                 // ── Avatar with initials ──
-                Container(
-                  height: 56,
-                  width: 56,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        colorScheme.primary,
-                        colorScheme.primary.withValues(alpha: 0.6),
-                      ],
-                    ),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.primary.withValues(alpha: 0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            Userinfoscreen(userId: receiverId),
+                      ),
+                    );
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: 56,
+                        width: 56,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              colorScheme.primary,
+                              colorScheme.primary.withValues(alpha: 0.6),
+                            ],
+                          ),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: colorScheme.primary.withValues(alpha: 0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Text(
+                            _initials(receiverName),
+                            style: textTheme.titleMedium?.copyWith(
+                              color: colorScheme.onPrimary,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      _initials(receiverName),
-                      style: textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onPrimary,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1,
-                      ),
-                    ),
                   ),
                 ),
 

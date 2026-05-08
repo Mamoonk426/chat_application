@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:chat_application/components/Toasts.dart';
 
 import 'package:chat_application/models/userModel.dart';
+import 'package:chat_application/services/authServices.dart';
 import 'package:chat_application/services/getUserServices.dart';
 import 'package:chat_application/services/requestServices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class addChatprovider with ChangeNotifier {
+  final Authservices authservices = Authservices();
   final Requestservices requestservices = Requestservices();
   final Getuserservices getuserservices = Getuserservices();
 

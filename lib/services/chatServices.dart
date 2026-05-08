@@ -44,7 +44,9 @@ class Chatservices {
       'lastMessageSenderId': newMessage.senderId,
       'participants': FieldValue.arrayUnion([receiverId, senderId]),
     }, SetOptions(merge: true));
-    batch.update(chatRef, {'unreadCounts': FieldValue.increment(1)});
+    batch.update(chatRef, {
+      'unreadCounts.$receiverId': FieldValue.increment(1),
+    });
     batch.set(messageDoc, newMessage.toMap());
 
     await batch.commit();
@@ -52,6 +54,7 @@ class Chatservices {
   }
 
   Future<String> startChat(String recieverId, String message) async {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
     final chatId = await generateChatId(recieverId);
     final senderId = FirebaseAuth.instance.currentUser!.uid.toString();
 
@@ -86,7 +89,7 @@ class Chatservices {
       }, // ← was recieverId, now receiverName
       'senderName': senderName,
       'receiverName': receiverName,
-      'unreadCounts': FieldValue.increment(1),
+      'unreadCounts': {recieverId: FieldValue.increment(1), currentUserId: 0},
     }, SetOptions(merge: true));
     batch.set(messageDoc, newMessage.toMap());
 
@@ -108,6 +111,7 @@ class Chatservices {
   }
 
   Future<void> markMessagesAsRead(String chatId, String currentUserId) async {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
     if (currentUserId.isEmpty) return;
 
     final messages = await dbInstance
@@ -145,7 +149,7 @@ class Chatservices {
 
     if (hasUpdate) {
       await dbInstance.collection("ChatRoom").doc(chatId).update({
-        "unreadCounts": 0,
+        "unreadCounts": {currentUserId: 0},
       });
       await batch.commit();
 
@@ -202,17 +206,23 @@ class Chatservices {
         .delete();
   }
 
-  Stream<Map<String, int>> getUnreadCounts() {
+  Stream<Map<String, Map<String, int>>> getUnreadCounts(String recieverId) {
     final currentUserId = FirebaseAuth.instance.currentUser!.uid;
     return dbInstance
         .collection('ChatRoom')
         .where('participants', arrayContains: currentUserId)
         .snapshots()
         .map((counts) {
-          final Map<String, int> count = {};
+          final Map<String, Map<String, int>> count = {};
           for (final c in counts.docs) {
-            final unreadCounts = c.data()['unreadCounts'] as int;
-            count[c.id] = unreadCounts;
+            final unreadCounts =
+                (c.data()['unreadCounts'] as Map<String, dynamic>?) ?? {};
+            count[c.id] = {};
+            unreadCounts.forEach((userId, value) {
+              count[c.id]![userId] = (value is int)
+                  ? value
+                  : int.tryParse(value.toString()) ?? 0;
+            });
           }
           return count;
         });

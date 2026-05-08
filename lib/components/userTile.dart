@@ -1,8 +1,11 @@
+import 'package:chat_application/components/userStatusDot.dart';
+import 'package:chat_application/view/userInfoScreen.dart';
 import 'package:flutter/material.dart';
 
 class Usertile extends StatelessWidget {
   final String leading;
   final String title;
+  final String? userId; // Added userId
   final bool? status;
   final VoidCallback onPressed;
   final String actionLabel;
@@ -12,6 +15,7 @@ class Usertile extends StatelessWidget {
     super.key,
     required this.title,
     required this.leading,
+    this.userId, // Added userId
     required this.status,
     required this.onPressed,
     this.actionLabel = 'Add',
@@ -39,34 +43,47 @@ class Usertile extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Stack(
-                children: [
-                  Container(
-                    height: 55,
-                    width: 55,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).primaryColor,
-                          Theme.of(context).colorScheme.inversePrimary,
-                        ],
+              GestureDetector(
+                onTap: () {
+                  if (userId != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Userinfoscreen(userId: userId),
                       ),
-                      shape: BoxShape.circle,
+                    );
+                  }
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      height: 55,
+                      width: 55,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Theme.of(context).primaryColor,
+                            Theme.of(context).colorScheme.inversePrimary,
+                          ],
+                        ),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(child: Text(leading)),
                     ),
-                    child: Center(child: Text(leading)),
-                  ),
-                  Positioned(
-                    top: 40,
-                    right: 2,
-                    child: Icon(
-                      size: 10,
-                      Icons.circle,
-                      color: isOnline ? Colors.green : Colors.grey,
+                    Positioned(
+                      top: 40,
+                      right: 2,
+                      child: userId != null
+                          ? UserStatusDot(userId: userId!, size: 12)
+                          : Icon(
+                              size: 10,
+                              Icons.circle,
+                              color: isOnline ? Colors.green : Colors.grey,
+                            ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              SizedBox(width: 30),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

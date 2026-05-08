@@ -13,6 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Chatprovider with ChangeNotifier {
+  static String currentUserId = FirebaseAuth.instance.currentUser!.uid;
   final dbInstance = FirebaseFirestore.instance;
   Chatservices chatservices = Chatservices();
   Authservices authservices = Authservices();
@@ -28,8 +29,8 @@ class Chatprovider with ChangeNotifier {
   String? get searchQuery => _searchQuery;
   StreamSubscription<bool>? listenToType;
   List<ChatModel> SyncedChats = [];
-  StreamSubscription<Map<String, int>>? _unreadCountStream;
-  Map<String, int> chatsUnreadCounts = {};
+  StreamSubscription<Map<String, Map<String, int>>>? _unreadCountStream;
+  Map<String, Map<String, int>> chatsUnreadCounts = {};
 
   Future<bool> deleteChat(String chatId) async {
     return chatservices.deleteChat(chatId);
@@ -71,12 +72,14 @@ class Chatprovider with ChangeNotifier {
     }
   }
 
-  void listenToUnreadCounts({String? chatId}) {
+  void listenToUnreadCounts({String? chatId, String? recieverId}) {
     _unreadCountStream?.cancel();
-    _unreadCountStream = chatservices.getUnreadCounts().listen((counts) {
+    _unreadCountStream = chatservices.getUnreadCounts(recieverId ?? '').listen((
+      counts,
+    ) {
       chatsUnreadCounts = counts;
       notifyListeners();
-      print("UNREAD MAP  ---->>  :${counts[chatId]} ");
+      print("UNREAD MAP  ---->>  : $chatsUnreadCounts ");
     });
   }
 

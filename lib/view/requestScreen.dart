@@ -47,10 +47,7 @@ class _RequestscreenState extends State<Requestscreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              colorScheme.surface,
-              colorScheme.surface.withOpacity(0.8),
-            ],
+            colors: [colorScheme.surface, colorScheme.surface.withOpacity(0.8)],
           ),
         ),
         child: SafeArea(
@@ -81,7 +78,8 @@ class _RequestscreenState extends State<Requestscreen> {
                   width: double.infinity,
                   child: SegmentedButton<bool>(
                     style: SegmentedButton.styleFrom(
-                      backgroundColor: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                      backgroundColor: colorScheme.surfaceContainerHighest
+                          .withOpacity(0.5),
                       selectedBackgroundColor: colorScheme.primary,
                       selectedForegroundColor: colorScheme.onPrimary,
                       side: BorderSide.none,
@@ -181,6 +179,7 @@ class _RequestscreenState extends State<Requestscreen> {
                           : item.senderName);
 
                   return Requesttile(
+                    userId: otherId,
                     isSentRequest: request.isSentSelected,
                     statusLabel: item.status,
                     isAccepted: item.status == 'Accepted',
@@ -231,6 +230,7 @@ class _RequestscreenState extends State<Requestscreen> {
         final friendId = friend['id'] as String;
 
         return Requesttile(
+          userId: friendId,
           isAccepted: true, // Shows "Start Chat" button
           startChat: () {
             Navigator.push(

@@ -8,5 +8,11 @@ class Getuserservices {
     final snapshot = await firebaseFirestore.collection('Users').get();
     return snapshot.docs.map((doc) => Usermodel.fromMap(doc.data())).toList();
   }
-
+  Future<Usermodel?> getUserById(String uid) async {
+    final doc = await firebaseFirestore.collection('Users').doc(uid).get();
+    if (doc.exists && doc.data() != null) {
+      return Usermodel.fromMap(doc.data()!);
+    }
+    return null;
+  }
 }
