@@ -32,6 +32,7 @@ class _ChatscreenState extends State<Chatscreen> {
     if (!_isInitialized) {
       _chatProvider = Provider.of<Chatprovider>(context, listen: false);
       _chatProvider.listenToMessages(widget.id);
+      _chatProvider.listenToUnreadCounts();
       _chatProvider.setCurrentandOtherUser();
       _chatProvider.markAsRead(widget.id);
       _chatProvider.listenToUserStatus(widget.id);
@@ -152,7 +153,9 @@ class _ChatscreenState extends State<Chatscreen> {
                     radius: 20,
                     backgroundColor: colorScheme.primary.withOpacity(0.12),
                     child: Text(
-                      widget.name.isNotEmpty ? widget.name[0].toUpperCase() : '?',
+                      widget.name.isNotEmpty
+                          ? widget.name[0].toUpperCase()
+                          : '?',
                       style: TextStyle(
                         color: colorScheme.primary,
                         fontWeight: FontWeight.w700,

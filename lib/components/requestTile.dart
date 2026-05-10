@@ -36,10 +36,11 @@ class _RequesttileState extends State<Requesttile> {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.all(12),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            SizedBox(height: 100),
             GestureDetector(
               onTap: () {
                 if (widget.userId != null) {
@@ -52,6 +53,7 @@ class _RequesttileState extends State<Requesttile> {
                   );
                 }
               },
+
               child: SizedBox(
                 height: 80,
                 width: 80,
@@ -65,7 +67,7 @@ class _RequesttileState extends State<Requesttile> {
                 ),
               ),
             ),
-            SizedBox(width: 10),
+            SizedBox(width: 20),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

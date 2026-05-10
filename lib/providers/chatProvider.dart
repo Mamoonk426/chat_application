@@ -13,7 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Chatprovider with ChangeNotifier {
-  static String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  String get currentUserId => FirebaseAuth.instance.currentUser?.uid ?? '';
   final dbInstance = FirebaseFirestore.instance;
   Chatservices chatservices = Chatservices();
   Authservices authservices = Authservices();
@@ -72,11 +72,9 @@ class Chatprovider with ChangeNotifier {
     }
   }
 
-  void listenToUnreadCounts({String? chatId, String? recieverId}) {
+  void listenToUnreadCounts() {
     _unreadCountStream?.cancel();
-    _unreadCountStream = chatservices.getUnreadCounts(recieverId ?? '').listen((
-      counts,
-    ) {
+    _unreadCountStream = chatservices.getUnreadCounts().listen((counts) {
       chatsUnreadCounts = counts;
       notifyListeners();
       print("UNREAD MAP  ---->>  : $chatsUnreadCounts ");

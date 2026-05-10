@@ -39,7 +39,7 @@ class Usertile extends StatelessWidget {
         height: 75,
         width: double.infinity,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(12.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -84,6 +84,7 @@ class Usertile extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

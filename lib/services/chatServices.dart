@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class Chatservices {
   final dbInstance = FirebaseFirestore.instance;
-
   Future<String> generateChatId(String recieverId) async {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
     if (currentUserId == null) return '';
@@ -89,7 +88,8 @@ class Chatservices {
       }, // ← was recieverId, now receiverName
       'senderName': senderName,
       'receiverName': receiverName,
-      'unreadCounts': {recieverId: FieldValue.increment(1), currentUserId: 0},
+      'unreadCounts.$recieverId': FieldValue.increment(1),
+      'unreadCounts.$currentUserId': 0,
     }, SetOptions(merge: true));
     batch.set(messageDoc, newMessage.toMap());
 
@@ -111,7 +111,6 @@ class Chatservices {
   }
 
   Future<void> markMessagesAsRead(String chatId, String currentUserId) async {
-    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
     if (currentUserId.isEmpty) return;
 
     final messages = await dbInstance
@@ -121,7 +120,13 @@ class Chatservices {
         .where('status', isNotEqualTo: 'read')
         .get();
 
-    if (messages.docs.isEmpty) return;
+    if (messages.docs.isEmpty) {
+      // Even if no messages to mark, we should ensure the unread count is reset in Firestore
+      await dbInstance.collection("ChatRoom").doc(chatId).update({
+        'unreadCounts.$currentUserId': 0,
+      });
+      return;
+    }
 
     final batch = dbInstance.batch();
     bool hasUpdate = false;
@@ -129,7 +134,6 @@ class Chatservices {
     print(
       "DEBUG: Processing ${messages.docs.length} unread messages for $chatId",
     );
-    print("DEBUG: currentUserId: '$currentUserId'");
 
     for (var doc in messages.docs) {
       final msgData = doc.data();
@@ -139,22 +143,16 @@ class Chatservices {
       if (senderId != currentUserId) {
         batch.update(doc.reference, {'status': 'read'});
         hasUpdate = true;
-        print("DEBUG: Marking message ${doc.id} as read. (Sender: $senderId)");
-      } else {
-        print(
-          "DEBUG: Skipping message ${doc.id} as it was sent by current user ($senderId)",
-        );
       }
     }
 
-    if (hasUpdate) {
-      await dbInstance.collection("ChatRoom").doc(chatId).update({
-        "unreadCounts": {currentUserId: 0},
-      });
-      await batch.commit();
+    // Always update unreadCounts even if no messages were marked as read (to keep it in sync)
+    batch.update(dbInstance.collection("ChatRoom").doc(chatId), {
+      'unreadCounts.$currentUserId': 0,
+    });
 
-      print("DEBUG: MARKED AS READ batch committed");
-    }
+    await batch.commit();
+    print("DEBUG: MARKED AS READ batch committed and unreadCounts reset for $currentUserId");
   }
 
   Stream<List<ChatModel>> getChat(String uid) {
@@ -206,8 +204,11 @@ class Chatservices {
         .delete();
   }
 
-  Stream<Map<String, Map<String, int>>> getUnreadCounts(String recieverId) {
-    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  Stream<Map<String, Map<String, int>>> getUnreadCounts() {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    if (currentUserId == null) {
+      return const Stream.empty();
+    }
     return dbInstance
         .collection('ChatRoom')
         .where('participants', arrayContains: currentUserId)

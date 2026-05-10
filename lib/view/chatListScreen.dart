@@ -208,11 +208,10 @@ class _ChatscreenState extends State<Chatlistscreen> {
                             receiverId: otherId,
                             unreadCounts:
                                 chat.chatsUnreadCounts[chatItem
-                                    .documentId]?[Chatprovider.currentUserId],
+                                    .documentId]?[chat.currentUserId],
                             onLongPress: () {
-                              chat.listenToUnreadCounts(
-                                chatId: chatItem.documentId,
-                              );
+                              print(chat.currentUserId);
+                              chat.listenToUnreadCounts();
                               _showDeleteConfirmationDialog(
                                 context,
                                 chat,
