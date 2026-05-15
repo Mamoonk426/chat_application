@@ -11,7 +11,6 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
-lib/firebase_options.dart/
 
 # IntelliJ related
 *.iml
@@ -45,6 +44,33 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# FCM Backend
-lib/fcm-Backend/node_modules/
-lib/fcm-Backend/service-account.json
+# ============================================================
+# 🔐 SENSITIVE / SECRET FILES — DO NOT COMMIT
+# ============================================================
+
+# Firebase config files (contain API keys)
+# Regenerate with: flutterfire configure
+lib/firebase_options.dart
+
+# Android Firebase config (download from Firebase Console)
+android/app/google-services.json
+
+# iOS Firebase config (download from Firebase Console)
+ios/Runner/GoogleService-Info.plist
+
+# Android local machine paths (auto-generated per developer)
+android/local.properties
+
+# FCM Backend — root folder (has its own separate .git repo)
+# The Flutter app only needs the Railway URL, not the source
+fcm-backend/
+lib/fcm-Backend/
+
+# Environment variable files
+.env
+.env.local
+.env.production
+.env.*
+
+# Debug log files
+flutter_*.log
